@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 스칼라 데이터 -->
+    <script>
+        let data1 = 10;
+        let data2 = [100,200,300];
+        let data3 = "문자열" //문자열은 세부 데이터를 변경할 없다.
+        //문자열은 전체를 변경해야 한다.
+
+        let f1 = (arg)=>{
+            console.log("arg : " + arg)
+            arg = 20;
+        }
+
+        f1(data1);
+
+        //함수 내에서 data1을 변경을 해도 data1은 변경되지 않는다.
+        console.log("data : " + data1);
+
+        let f2 = (ar) =>{
+            console.log("ar : "+ar);
+            //함수 내에서 매개변수로 받은 배열이나 객체의 내부 요소를 변경하면 내부 요소를 변경하면 원본의 내용이 변경될 수 있음
+            //바람직하지 않은 것으로 간주하지만
+            //메모리를 아낄 목적으로 이용하는 경우도 있다.
+            ar[0] =2030;
+        }
+
+        f2(data2);
+        console.log("data2 : " + data2);
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
