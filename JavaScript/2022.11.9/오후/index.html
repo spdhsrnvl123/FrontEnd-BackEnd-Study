@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        var br = [100,200,300,400];
+        var ins = {"name":"카리나","job":"가수","company":"SM","group":"aespa"};
+        
+        //spread 연산
+        let [first, ...etc] = br;
+
+        console.log(first);
+        console.log(etc);
+
+        let {name1,job1, ...attr} =ins
+        console.log(attr)
+
+        //함수에 사용되면 rest param
+        function rest({name1, job1, ...attr}){
+            console.log(attr);
+        }
+
+        rest(ins);
+
+        let [a, b, c, d, e = 500] = br;
+        console.log(e);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
