@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        window.addEventListener("load",(e)=>{
+            let csv = document.getElementById("csv")
+            let json1 = document.getElementById("json1");
+            let json2 = document.getElementById("json2")
+
+            let content = document.getElementById("content");
+
+            json2.addEventListener("click",(e)=>{
+                let request = new XMLHttpRequest();
+                request.open('GET','data2.json')
+                request.send('')
+
+                request.addEventListener("load",()=>{
+                    //JSON 파싱을 해서 JavaScript 데이터로 만들어 준 것
+                    let result = JSON.parse(request.responseText)
+                    //필요한 데이터만 추출해서 사용 - parsing
+                    let count = result.count;
+                    let documents = result.documents;
+
+                    content.innerHTML = "데이터개수 : " + count;
+                    for(doc of documents){
+                        content.innerHTML += "<p>" + doc.name + "</p>";
+                    }
+                })
+                request.addEventListener("error",()=>{
+
+                })
+            });
+        
+            json1.addEventListener("click",(e)=>{
+                let request = new XMLHttpRequest();
+                request.open('GET','data.json');
+                request.send();
+                request.addEventListener("load",()=>{
+                    //{}로 감싸져 있으므로 객체
+                    let result = JSON.parse(request.responseText);
+                    content.innerHTML += "<p>이름" + result.name + '</p>';
+                })
+                request.addEventListener("error",()=>{
+                    alert(request.status)
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <button id="csv">csv 읽기</button>
+    <button id="json1">json 읽기</button>
+    <button id="json2">json 읽기</button>
+    <div id = "content">출력 영역</div>
+</body>
+</html>
