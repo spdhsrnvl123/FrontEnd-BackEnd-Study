@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+        //iphone에서 접속한 것을 확인
+        //이 코드는 대부분 서버에 작성한다.
+        var os = ["iphone"];
+        for(o of os){
+            //os 배열에 있는 문자열이 userAgent 에 포함되었는지 여부를 확인
+            if(navigator.userAgent.toLowerCase().indexOf(o) >= 0){
+                //배열에 포함된 운영체제에서 접속했을 때 수행할 작업
+                break;
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
