@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    // var x = 10;
+    // //앞의 식의 결과가 false이면 뒤의 식을 확인하지 않음
+    // let result = x > 10 && x++;
+    // console.log(x);
+
+    // //javascript는 Boolean이 아니어도 && 연산을 할 수 있음
+    // result = true && 10;
+    // console.log(result);
+
+    // let data1 = null;
+    // let data2= [3,4];
+    // //data1 Falsy 라면 data2 가 대입되고 Truthy 라면 data1이 대입됩니다.
+    // result = data1 || data2;
+    // console.log(result);
+
+    // var a1 = 20;
+    // var a2 = 30;
+    // //맨 앞의 내용이 true이면 다음 내용이 남고
+    // //그렇지 않으면 마지막 내용이 남습니다.
+    // let max = (a1>a2) ? a1 : a2;
+    // console.log(max);
+// ----------------------------------------------------------
+    //nullish operator
+    var data1 = 0;
+    var data2 = "JavaScript";
+
+    let result = data1 || data2;
+    console.log(result);
+
+    //data1 이 null이 아니기 때문에 data1 이 남습니다.
+    //?? Falsy를 판단하는 것이 아니고 데이터의 존재여부를 확인
+    result = data1 ?? data2;
+    console.log(result);
+</script>
+<body>
+    
+</body>
+</html>
