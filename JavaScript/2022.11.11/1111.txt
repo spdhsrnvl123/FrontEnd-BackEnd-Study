@@ -466,34 +466,3 @@ for(var i=0; i<태그들.length; i++){
 	var 태그 = 태그들[i].childNodes[0].nodeValue;
 	//태그 사용
 }
-
-
-
-
-git init
-git add .
-git commit -m "메시지"
-
-git branch -m master main
-git branch
-
-git remote add origin https://github.com/itggangpae/kakao1111.git
-git push origin main
-
-- 다운로드
-git clone https://github.com/itggangpae/kakao1111.git
-
-- 변경된 내용 받기
-git pull origin main
-
-- 변경된 내용 업데이트
-git add .
-git commit -m "메시지"
-git push origin main
-
-
-
-
-
-
-
