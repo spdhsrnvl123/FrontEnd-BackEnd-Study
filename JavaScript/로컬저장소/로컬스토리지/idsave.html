@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>idsave 2</title>
+</head>
+<body>
+    <form method="post" action="login" id="loginform">
+        아이디 : <input type="text" id="id" /><br />
+        비밀번호 : <input type="password" id="pw" /><br />
+        <input type="checkbox" id="idsave" />아이디 저장<br />
+        <input type="submit" value="로그인" />
+    </form>
+    <script>
+        let loginform = document.getElementById("loginform");
+        let ids = document.getElementById("id");
+        let pw = document.getElementById("pw");
+        let idsave = document.getElementById("idsave");
+        /*
+        메서드 이용
+        storage.setItem(“키이름”, {속성:값, 속성:값...}); 저장
+        localstorage.getItem(“키이름”); 읽기
+        storage.removeItem(“키이름”); 제거 
+        */
+        loginform.addEventListener("submit",(e)=>{
+            if(idsave.checked === true){
+                localStorage.setItem("ids",ids.value)
+            }else{
+               localStorage.removeItem("ids") 
+            }
+        })
+
+        window.addEventListener("load",()=>{
+            if(typeof localStorage.ids !== "undefined"){
+                ids.value = localStorage.getItem("ids");
+                idsave.checked = true;
+            }
+        })
+    </script>
+</body>
+</html>
