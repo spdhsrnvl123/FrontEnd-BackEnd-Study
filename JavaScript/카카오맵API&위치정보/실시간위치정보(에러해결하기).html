@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoLocation</title>
+    <script>
+        // 5초마다 위치 정보 갱신 -> 잘 안됨 다시 해보기.
+        navigator.geolocation.watchPosition(onSuccess, onError,{
+            maximumAge : 5000,
+            enableHighAccuracy : true
+        })
+        
+        function onSuccess(position){
+            alert(`위도 : ${position.coords.latitude} \n경도 : ${position.coords.longitude} `)
+        }
+
+        function onError(error){
+            alert(error.message);
+        }
+
+
+        // navigator.geolocation.watchPosition((position)=>{
+        //     //위도 와 경도 출력
+        //     console.log(position.coords.latitude + ":" + position.coords.longitude)
+        // },(error)=>{
+        //     console.log(error.code);
+        // },{
+        //     maximumAge : 0,
+        //     timeout: 5000,
+        //     enableHighAccuracy : false
+        // })
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위치정보출력(한번만)</title>
+</head>
+<body>
+    <script>
+        //한 번만 위치 정보 출력
+            navigator.geolocation.getCurrentPosition((position)=>{
+            //위도 와 경도 출력
+            alert(`위도 : ${position.coords.latitude} , 경도 : ${position.coords.longitude}`)
+        },(error)=>{
+            alert(error.code);
+        })
+    </script>
+</body>
+</html>
