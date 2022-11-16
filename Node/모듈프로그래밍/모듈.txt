@@ -1,0 +1,33 @@
+2)모듈의 내용을 내보내고 가져와서 사용
+=>내용을 내보낼 파일을 생성 - var.js
+const odd = "홀수";
+const even = "짝수";
+
+//다른 곳에서 사용할 수 있도록 내보내기
+module.exports = {
+    odd,
+    even
+}
+
+=>var.js 파일의 내용을 가져와서 사용할 파일을 생성 - func.js
+//var 에서 내보낸 내용 가져오기
+const {odd, even} = require('./var');
+
+const checkOddOrEvent = (num) => {
+    if(num % 2){
+        return odd;
+    }else{
+        return even;
+    }
+}
+//이렇게 내보내면 가져올 때는 아무이름이나 사용해서 받으면 됩니다.
+module.exports = checkOddOrEvent;
+
+=>실행할 파일을 생성 - app.js
+//{ }로 묶어서 내보낸 것은 이름을 맞추어서 받아야 합니다.
+const {odd, even} = require('./var');
+//하나를 내보냈을 때는 이름을 바꿔서 받을 수 있습니다.
+//func 의 내용을 가져와서 checkNumber 라는 이름을 붙이는 것입니다.
+const checkNumber = require('./func');
+
+console.log(checkNumber(5));
