@@ -1,0 +1,286 @@
+**express 모듈을 이용한 웹 서버 생성 및 실행
+1.express 모듈
+=>내장 모듈이 아님 - 설치가 필요
+=>http 모듈을 가지고 웹 서버를 만들 수 있는데 가독성이 떨어지고 확장성이 떨어짐
+=>http 모듈 보다는 코드 관리가 용이하고 편의성이 높은 모듈
+=>이 모듈을 제외하고 웹 서버를 생성해주는 모듈은 여러가지가 있고 최근에도 추가되고 있음
+=>현재 가장 많이 사용되는 노드의 웹 서버 모듈
+
+2.패키지 설치
+=>express(웹 서버 제작을 위한 모듈), nodemon(소스 코드를 수정하면 자동으로 재시작되도록 해주는 모듈)
+npm install express
+npm install --save-dev nodemon
+
+3.package.json 파일의 설정을 수정
+=>main 속성에 시작 파일의 이름을 설정: app.js
+=>scripts 속성에 "start":"nodemon app" 이라는 태그 추가
+npm start 라는 명령을 실행하면 nodemon app 이라는 명령을 수행
+
+4.express web server의 기본 틀
+const express = require('express'); //모듈 가져오기
+
+const app = express(); //웹서버 인스턴스 생성
+
+app.set('port', 포트번호); //포트 설정
+
+//사용자의 요청을 처리하는 코드
+
+app.listen(app.get('port'), () => {
+	//서버가 정상적으로 구동되었을 때 수행할 내용
+	//일반적으로는 콘솔에 메시지를 출력
+});
+
+5.사용자의 요청을 처리하는 함수
+1)종류 - 요청 방식에 맞는 함수를 적용cq
+=>app.get
+=>app.post
+=>app.delete
+=>app.put
+=>app.patch
+=>app.options
+
+2)함수의 매개변수
+=>첫번째는 url
+=>두번째는 2개의 매개변수를 갖는 콜백 함수로 이 함수가 url 요청이 왔을 때 호출됩니다.
+콜백 함수의 첫번째 매개변수는 사용자의 요청 객체(request) 이고 두번째 매개변수는 사용자에게 응답을 하기 위한 객체(response)
+
+3)사용자에게 응답
+=>직접 작성: response.send(문자열)
+=>html 파일 출력: response.sendFile(html 파일 경로)
+
+6.웹 서버 만들기
+1)출력할 html 파일을 1개 생성하고 작성 - main.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>express</title>
+</head>
+<body>
+    <h1>Express Module 을 이용한 웹 서비스</h1>
+    <p>
+        Node 의 express 모듈을 이용해서 웹 서비스를 구축하면 
+        작은 양의 코드를 가지고 만들 수 있고 많은 설정을 하지
+        않기 때문에 이해하기도 쉽습니다.
+    </p>
+</body>
+</html>
+
+2)package.json 파일에 entry point(시작 포인트)로 설정한 파일을 생성하고 웹 서버를 구동시키는 코드를 작성
+//웹 서버를 구축을 위한 외부 모듈
+const express = require('express');
+
+//현재 디렉토리에 대한 절대 경로를 알아내기 위한 내장 모듈
+const path = require('path');
+
+//서버를 준비
+const app = express();
+app.set('port', 3000);
+
+//사용자의 요청 처리
+// /는 포트번호까지의 요청
+app.get('/', (req, res) => {
+    //현재 디렉토리에 있는 main.html을 출력
+    res.sendFile(path.join(__dirname, '/main.html'));
+});
+
+//서버를 구동
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 대기 중');
+});
+
+3)구동
+npm start 또는 node 작성한스크립트파일명
+=>특별한 경우가 아니면 npm start 로 실행
+
+4)정상적으로 구동되었으면 브라우저에서 확인
+=>http://localhost:3000
+
+7.요청 객체: 일반적으로 request 객체라고 합니다.
+=>클라이언트의 요청 정보를 저장하고 있는 객체
+request.app: app 객체에 접근
+
+request.body: body-parser 미들웨어가 만드는 요청의 본문을 해석한 객체 - post 나 put 요청이 왔을 때 파라미터 읽기
+request.cookies: 쿠키 정보를 가지는 객체
+request.ip: 요청을 전송한 클라이언트의 ip 정보 - ip를 알면 접속한 국가를 알 수 있습니다.
+request.params: 라우트 매개변수에 담긴 정보
+request.query: query string - get 이나 delete 요청에서 파라미터 읽기
+request.get(헤더이름): 헤더의 값 가져오기, 인증에서 많이 사용, 최근에는 API 사용 권한을 토큰을 이용해서 발급하고 토큰의 값을 헤더에 저장해서 전송하도록 만드는 경우가 많습니다.
+
+request.signedCookies: 서명된 쿠키 정보
+request.session: 세션 객체
+
+8.응답 객체 - response 객체
+=>response.cookie(키, 값, 옵션): 쿠키 생성
+=>response.clearCookie(키, 값, 옵션): 쿠키 삭제
+=>response.end() 데이터 없이 응답을 보냄
+=>response.json(JSON 문자열): JSON 형식으로 응답 
+=>response.redirect(URL): 리다이렉트할 URL
+=>response.render(뷰이름, 데이터): 템플릿 엔진을 이용해서 서버의 데이터를 html 에 출력하고자 할 때 사용
+이를 서버 랜더링이라고 합니다.
+=>response.send(메시지): 메시지를 화면에 출력
+=>response.sendFile(파일 경로): 파일을 읽어서 화면에 출력
+=>response.set(헤더이름, 값): 헤더를 설정
+=>response.status(코드): 응답 코드 설정
+
+9. dotenv
+=>.env 파일을 읽어서 process.env 로 생성해주는 패키지
+.env 파일에 작성한 내용을 소스 코드에서 process.env 객체를 이용해서 사용 가능하도록 하는 패키지
+
+=>환경의 변화(개발 환경, 운영 환경, 테스트 환경) 때문에 변경되는 설정을 별도의 텍스트 파일에 만들어두면 환경이 변경될 때 텍스트 파일의 내용만 변경하면 되기 때문에 컴파일이나 빌드를 다시 할 필요가 없어집니다.
+
+이러한 정보의 대표적인 것이 데이터베이스 접속 위치 와 API 키 입니다.
+
+10.Middle Ware
+=>사용자의 요청이 발생하고 서버가 요청을 처리하고 응답을 전송하는 시스템에서 요청을 처리하기 전이나 후에 동작할 내용을 수행하는 객체
+=>요청을 처리하기 전에 수행하는 일은 필터링이고 요청을 처리한 후 수행하는 일은 변환입니다.
+필터링을 할 때는 유효성 검사 작업 과 로그인 확인 작업이 대표적입니다.
+=>node에서는 app.use(미들웨어) 형태로 장착
+app.use(미들웨어): 모든 요청에서 미들웨어가 동작
+app.use(url, 미들웨어): url에서만 미들웨어가 동작
+
+=>현재 미들웨어에서 다음 미들웨어로 넘어가는 함수 :  next()
+
+1)morgan
+=>로그를 기록해주는 미들웨어
+=>morgan(format, options) 으로 사용
+format
+ 	dev: 개발용, 배포를 할 때는 모두 삭제됩니다.
+	tiny
+	short
+	common
+	combined
+
+options
+	immediate: response에 기록하는 것이 아니고 request에서 기록(에러가 발생해도 기록됨)
+	skip: 로깅을 스킵하기 위한 조건을 설정
+	stream: 기본적으로 로그는 화면에 출력되지만 파일에 출력하고자 할 때 사용
+
+=>로그 파일을 생성해주는 패키지: npm install file-stream-rotator
+이 패키지를 이용하면 주기적으로 파일을 생성해서 로그를 기록하는 것이 가능
+=>로그 형식
+HTTP요청방식 요청URL 상태코드 응답속도 트래픽
+=>조금 더 자세한 로그를 원하는 경우에는 winston 패키지를 사용
+
+
+2)날짜 별로 로그 파일에 로그를 기록
+=>패키지 설치: morgan, file-stream-rotator
+npm install morgan file-stream-rotator
+
+=>app.js 파일에 추가
+//일단위 로그 기록을 위한 설정
+const morgan = require('morgan');
+const FileStreamRotator = require('file-stream-rotator');
+//내장 모듈
+const fs = require('fs');
+//로그 파일을 저장할 디렉토리 생성
+const logDirectory = path.join(__dirname, 'log');
+//디렉토리 존재 여부를 확인하고 디렉토리가 없으면 생성
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+//일단위 로그 기록 설정
+const accessLogStream = FileStreamRotator.getStream({
+    date_format:'YYYYMMDD',
+    filename:path.join(logDirectory, 'access-%DATE%.log'),
+    frequency:'daily',
+    verbose:true
+});
+app.use(morgan('combined', {stream:accessLogStream}));
+
+=>서버를 다시 실행하고 log 디렉토리 와 오늘 날짜로 된 파일이 생성되는지 확인해보고 브라우저에서 접속한 후 로그 파일을 확인
+
+
+3)static(정적 - 내용이 변하지 않는)
+=>정적인 파일의 경로를 설정하는 미들웨어
+=>사용하는 방식
+app.use(url, express.static(실제 경로));
+url 요청이 오면 실제 경로에 있는 파일을 출력
+
+=>예
+app.use('/', express.static(path.join(__dirname, 'public'));
+
+/index 라고 요청을 하면 프로젝트 안에 있는 public 디렉토리의 index 라는 파일을 출력합니다.
+요청 경로 와 실제 파일의 경로를 일치하지 않도록 하기 위해서
+
+4)body-parser
+=>요청의 본문을 해석해주는 미들웨어로 별도로 설치할 필요는 없음
+express 를 설치하면 자동으로 설치가 됩니다.
+=>클라이언트에서 post 방식이나 put(patch) 방식으로 데이터를 전송할 때 그 데이터를 읽기 위한 미들웨어
+=>설정
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
+
+=>파일을 전송하는 경우에는 다른 미들웨어를 사용해야 합니다.
+
+5)compression
+=>데이터를 압축해서 전송하기 위한 미들웨어
+클라이언트에게 결과를 전송할 때 압축을 해서 전송하기 때문에 트래픽이 줄어듭니다.
+
+=>외부 모듈이라서 설치해야 합니다.
+npm install compression
+
+=>설정
+const compression = require('compression');
+app.use(compression());
+
+6)쿠키를 해석할 수 있도록 해주는 미들웨어
+=>쿠키는 중요
+=>app.use(cookieParser(키)); 를 작성하면 서버에서 쿠키를 읽을 수 있습니다.
+request객체.cookies 하게 되면 모든 쿠키가 넘어오게 됩니다.
+
+7)express-session
+=>세션(사용자의 정보를 서버에 저장) 관리를 위한 미들웨어
+=>클라이언트 측에서 이전 작업에 이어서 다른 작업을 하고자 할 때 세션을 이용합니다.
+=>세션은 서버의 메모리를 사용하기 때문에 세션이 너무 크거나 많아지면 서버의 성능이 저하됩니다.
+이런 경우에는 세션을 파일이나 데이터베이스에 유지하는 것이 좋습니다.
+
+8)세션을 사용하는 예제: 새로 고침을 하면 이전 내용에 +1을 해서 출력하기
+=>세션을 사용하기 위해서는 express-session 패키지 이용
+=>세션은 접속한 브라우저 별로 따로 생성됩니다.
+=>nodeserver.js 파일을 만들고 작성
+//노드에서는 다른 모듈을 가져올 때 require를 사용
+const express = require('express');
+
+//웹 서버를 생성할 수 있는 인스턴스를 생성
+const app = express();
+
+//포트 설정(1024번까지는 예약된 포트)
+//80번은 http 의 기본 포트, 443번은 https의 기본 포트
+app.set('port', 4000);
+
+//요청을 처리하는 함수 외부에 만든 변수는
+//모든 사용자가 공유합니다.
+let num = 1;
+//세션을 사용하기 위한 모듈 가져오기
+const session = require('express-session');
+//세션을 사용하기 위한 미들웨어 설정
+//세션은 클라이언트에 키를 만들어서 매핑을 합니다.
+//이 때 key의 값을 알아보기 어렵게 하기 위해서 연산을 수행할 
+//값을 주게되는데 이 값이 secret 입니다.
+app.use(session({
+    secret:"keyboard cat",
+    resave:false,
+    saveUninitialized:true
+}))
+
+//사용자의 요청 처리
+app.get("/session", (req, res) => {
+    //세션에 num의 값이 없으면 1로 초기화 하고 있으면 1 증가
+    if(!req.session.num){
+        req.session.num = 1;
+    }else{
+        req.session.num += 1;
+    }
+    //내용을 화면에 출력
+    res.send("num:" + num + "<br/>" +
+         "session의 num:" + req.session.num);
+    num = num + 1;
+})
+
+//서버를 실행시켜서 사용자의 요청을 처리
+app.listen(app.get('port'), ()=>{
+    console.log("서버 대기 중");
+});
+
+=>브라우저에서 접속을 하고 새로 고침을 한 후 다른 브라우저에서 동일한 URL로 접속해서 num 과 req.session.num을 비교

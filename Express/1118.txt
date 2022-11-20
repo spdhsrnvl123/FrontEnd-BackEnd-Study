@@ -1,0 +1,641 @@
+** Node Express
+=>Node 라이브러리 중에서 웹 애플리케이션 서버를 만드는 가장 많이 이용하는 라이브러리
+1.Middle Ware - Filter, AoP
+=>클라이언트의 요청을 처리하기 전이나 처리 한 후에 공통으로 해야 할 작업을 미리 만들어두고 사용하는 것
+
+1)세션 활용
+=>Session
+클라이언트의 정보를 서버에 저장하는 객체
+기본적으로 서버의 메모리에 만들어 짐
+세션이 크거나 많아지면 서버의 메모리에 부담을 주게되서 서버의 성능을 저하시킬 수 있기 때문에 파일이나 데이터베이스에 저장하는 것을 고려할 필요가 있음
+
+=>설치한 패키지
+npm install express
+npm install express-session
+npm install morgan
+npm install cookie-parser
+
+npm install --save-dev nodemon
+
+=>화면에 출력하기 위한 HTML 파일 생성 - index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 화면</title>
+</head>
+<body>
+    <h1>Node - Express Web Server</h1>
+</body>
+</html>
+
+=>서버의 메모리에 세션 생성 - app.js
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', 3000);
+
+//사용자의 요청 처리
+//요청처리 메서드는 get, post, put(patch), delete, options
+/*
+app.요청처리메서드(url, (req, res) => {
+    //처리
+
+    //응답
+    //send(직접 출력 내용 작성)
+    //sendFile(html 파일 경로)
+
+    //json(JSON 데이터) - 서버 랜더링을 하지 않음
+
+});
+*/
+
+const path = require('path'); //절대 경로 생성을 위해서 사용
+//세션 사용을 위한 모듈을 가져오기
+const session = require('express-session');
+
+//세션 사용을 위한 미들웨어 장착
+//req.session 으로 세션 객체 사용이 가능
+app.use(session({
+    secret:"keyboard cat",
+    resave:false,
+    saveUninitialized:true
+}));
+
+//포트번호(localhost:3000 -> ContextPath) 까지 요청 처리
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './index.html'));
+});
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+=>세션을 메모리에 저장하게 되면 재사용이 안되고 다른 서버 와의 공유도 어렵기 때문에 세션을 파일에 저장해서 공유하고 재사용 가능하도록 만들 수 있습니다.
+
+필요한 의존성을 설치
+npm install session-file-store
+
+app.js 파일에 설정을 추가하고 session 설정 미들웨어를 수정
+
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', 3000);
+
+//사용자의 요청 처리
+//요청처리 메서드는 get, post, put(patch), delete, options
+/*
+app.요청처리메서드(url, (req, res) => {
+    //처리
+
+    //응답
+    //send(직접 출력 내용 작성)
+    //sendFile(html 파일 경로)
+
+    //json(JSON 데이터) - 서버 랜더링을 하지 않음
+
+});
+*/
+
+const path = require('path'); //절대 경로 생성을 위해서 사용
+//세션 사용을 위한 모듈을 가져오기
+const session = require('express-session');
+//세션을 파일에 저장하기 위한 모듈 가져오기
+const FileStore = require('session-file-store')(session);
+
+//세션 사용을 위한 미들웨어 장착
+//req.session 으로 세션 객체 사용이 가능
+app.use(session({
+    secret:"keyboard cat",
+    resave:false,
+    saveUninitialized:true,
+    store: new FileStore()
+}));
+
+//포트번호(localhost:3000 -> ContextPath) 까지 요청 처리
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './index.html'));
+});
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+실행해서 sessions 라는 디렉토리가 만들어지는지 확인해보고 브라우저 접속했을 때 파일이 만들어지는지 확인
+
+=>세션을 데이터베이스(Maria DB - 다른 데이터베이스도 가능)에 저장하는 것이 가능
+데이터베이스에 접속해서 테이블을 생성
+create table session(
+	sid varchar(100) primary key not null,
+	session varchar(2048) default '{}',
+	lastSeen datetime default now()
+);
+
+npm install express-session-mariadb-store
+
+app.js 수정
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', 3000);
+
+//사용자의 요청 처리
+//요청처리 메서드는 get, post, put(patch), delete, options
+/*
+app.요청처리메서드(url, (req, res) => {
+    //처리
+
+    //응답
+    //send(직접 출력 내용 작성)
+    //sendFile(html 파일 경로)
+
+    //json(JSON 데이터) - 서버 랜더링을 하지 않음
+
+});
+*/
+
+const path = require('path'); //절대 경로 생성을 위해서 사용
+//세션 사용을 위한 모듈을 가져오기
+const session = require('express-session');
+//세션을 파일에 저장하기 위한 모듈 가져오기
+const FileStore = require('session-file-store')(session);
+//세션을 MariaDB에 저장하기 위한 모듈 가져오기
+const MariaDBStore = require('express-session-mariadb-store');
+
+//데이터베이스 접속 정보
+var options = {
+    host:"192.168.0.163",
+    port:3306,
+    user:"root",
+    password:"wnddkd",
+    database:"adam"
+}
+
+//세션 사용을 위한 미들웨어 장착
+//req.session 으로 세션 객체 사용이 가능
+app.use(session({
+    secret:"keyboard cat",
+    resave:false,
+    saveUninitialized:true,
+    store: new MariaDBStore(options)
+}));
+
+//포트번호(localhost:3000 -> ContextPath) 까지 요청 처리
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './index.html'));
+});
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+2)미들웨어 사용
+=>설치: morgan, cookie-parser, dotenv 설치
+npm install morgan cookie-parser dotenv
+
+=>프로젝트에 .env 파일(여기에 작성된 내용은 node 프로그램에서 process.env.이름으로 사용 가능)을 생성하고 작성
+COOKIE_SECRET=keyboard
+PORT=3000
+
+=>app.js 수정
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//.env 파일의 내용을 읽어서 process.env에 저장해주는 모듈
+const dotenv = require('dotenv');
+//.env 읽어오기
+dotenv.config();
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', process.env.PORT);
+
+//로그 출력
+const morgan = require('morgan');
+app.use(morgan('dev'));
+
+//post 방식의 파라미터를 읽을 수 있도록 설정
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
+
+//쿠키 사용이 가능하도록 설정
+const cookieParser = require("cookie-parser");
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
+//사용자의 요청 처리
+//요청처리 메서드는 get, post, put(patch), delete, options
+/*
+app.요청처리메서드(url, (req, res) => {
+    //처리
+
+    //응답
+    //send(직접 출력 내용 작성)
+    //sendFile(html 파일 경로)
+
+    //json(JSON 데이터) - 서버 랜더링을 하지 않음
+
+});
+*/
+
+const path = require('path'); //절대 경로 생성을 위해서 사용
+//세션 사용을 위한 모듈을 가져오기
+const session = require('express-session');
+//세션을 파일에 저장하기 위한 모듈 가져오기
+const FileStore = require('session-file-store')(session);
+//세션을 MariaDB에 저장하기 위한 모듈 가져오기
+const MariaDBStore = require('express-session-mariadb-store');
+const { urlencoded } = require('express');
+
+//데이터베이스 접속 정보
+var options = {
+    host:"192.168.0.163",
+    port:3306,
+    user:"root",
+    password:"wnddkd",
+    database:"adam"
+}
+
+//세션 사용을 위한 미들웨어 장착
+//req.session 으로 세션 객체 사용이 가능
+app.use(session({
+    secret:"keyboard cat",
+    resave:false,
+    saveUninitialized:true,
+    store: new MariaDBStore(options)
+}));
+
+//포트번호(localhost:3000 -> ContextPath) 까지 요청 처리
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './index.html'));
+});
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+3)파일 업로드 처리 - multer 미들웨어
+=>web service 에서 파일을 업로드할려면 multipart/form-data 형태로 데이터를 전송해야 합니다.
+
+=>node에서 multer를 가지고 파일 업로드를 처리할 때는 4가지로 나누어서 처리합니다.
+none: 파일 업로드가 없을 때
+single: 하나의 파일만 업로드 될 때
+array: 한번에 여러 개의 파일이 업로드 가능한데 하나의 파라미터로 업로드
+fields: 여러 개의 파일을 여러 개의 파라미터로 업로드 하는 경우 사용
+
+=>파일 업로드 처리를 할 때 파일의 이름을 유일 무일하게 변경하는 경우가 있음
+이런 경우에는 UUID(유일한 문자열) 나 현재 시간을 파일 이름에 추가해서 생성하는 것이 일반적입니다.
+
+=>실제 운영을 할 때는 애플리케이션 서버 디스크가 아닌 별도의 디스크(AWS 의 S3 서비스 나 Google의 Firebase 서비스 등)에 저장을 해야 합니다.
+
+=>저장을 할 때 디렉토리는 미리 만들어져 있어야 합니다.
+
+=>파일 업로드를 위한 준비
+multer 패키지를 설치
+	npm install multer
+
+app.js 파일에 디렉토리를 생성해주는 코드를 추가
+	//파일을 업로드하기 위한 디렉토리를 생성
+	const fs = require('fs');
+
+	try{
+    		//디렉토리를 읽는데 디렉토리가 없으면 예외가 발생
+    		fs.readdirSync('uploads');
+	}catch(error){
+    		//디렉토리 생성
+    		fs.mkdirSync('uploads');
+	}
+
+app.js 파일에 파일을 업로드 해주는 설정을 추가
+	//파일 업로드 설정
+	const multer = require('multer');
+	const upload = multer({
+    	storage:multer.diskStorage({
+        	destination(req, file, done){
+            		done(null, 'uploads/');
+        	},
+        	filename(req, file, done){
+            		const ext = path.extname(file.originalname);
+            		done(null, path.basename(file.originalname, ext) + Date.now() + ext);
+        		}
+    	}),
+    	limits:{fileSize: 1024 * 1024 * 10}
+	});
+
+=>파일 1개 업로드
+파일을 업로드 할 수 있는 클라이언트 파일 생성 - single.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하나의 파일 업로드</title>
+</head>
+<body>
+    <!-- action 이 없으면 요청 URL이 action이 됩니다.
+    file을 보내는 경우는 enctype 변경이 필수
+method는 post 나 put 이 될 수 있습니다.-->
+    <form id="form" method="post"
+        enctype="multipart/form-data">
+        <p>이름:
+            <input type="text" name="title" id="title"/>
+        </p>
+        <p>파일:
+            <input type="file" name="image" id="image"
+            accept="image/*"/>
+        </p>
+        <input type="submit" value="전송" />
+    </form>
+</body>
+</html>
+
+app.js 파일에 처리하는 코드를 추가
+//하나의 파일 업로드 처리
+app.get('/single', (req, res) => {
+    res.sendFile(path.join(__dirname, './single.html'));
+});
+
+app.post('/single', upload.single('image'), (req, res) => {
+    //title 파라미터 읽기
+    //post 방식에서의 파라미터는 req.body.파라미터이름
+    console.log(req.body.title);
+    console.log(req.file.originalname);
+    res.send('성공');
+})
+
+=>파일에 한글이 포함되어 있을 때 한글이 깨지는 문제는 파일을 업로드할 때 파일의 원래 이름을 같이 전송해서 파일의 원래 이름을 데이터베이스에 저장한 뒤 다운로드 할 때 파일을 변경해서 저장하는 방법으로 해결이 가능
+코드로 해결하는 방법도 있음
+=>app.js 파일의 파일 업로드 설정을 수정
+const upload = multer({
+    storage:multer.diskStorage({
+        destination(req, file, done){
+            done(null, 'uploads/');
+        },
+        filename(req, file, done){
+            file.originalname = 
+                Buffer.from(file.originalname, 'latin1')
+                .toString('utf8');
+                
+            const ext = path.extname(file.originalname);
+            done(null, path.basename(
+                file.originalname, ext) + 
+                Date.now() + ext);
+        }
+    }),
+    limits:{fileSize: 1024 * 1024 * 10}
+});
+
+
+=>여러 개의 파일 업로드 - 폼의 내용을 ajax로 전송
+클라이언트 파일 생성 - multi.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여러 개의 파일 업로드</title>
+</head>
+<body>
+    <form id="form" method="post"
+        enctype="multipart/form-data">
+        <p>이름:
+            <input type="text" name="title" id="title"/>
+        </p>
+        <p>파일:
+            <input type="file" name="image" id="image"
+            accept="image/*" multiple="multiple"/>
+        </p>
+        <input type="button" value="전송" id="btn"/>
+    </form>
+    <script>
+        document.getElementById('btn').addEventListener(
+            'click', (e) => {
+                //전송할 폼 데이터 생성
+                const formData = new FormData();
+                //내용 추가
+                let files = document.getElementById("image").files;
+                for(let idx=0; idx<files.length; idx++){
+                    formData.append('image', document.getElementById("image").files[idx]);
+                }
+                formData.append('title',
+                 document.getElementById('title').value);
+                //ajax를 이용해서 전송
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "/multi", true);
+                xhr.send(formData);
+                xhr.addEventListener('load', (e) => {
+                    alert('성공');
+                })
+
+        })
+    </script>
+</body>
+</html>
+
+app.js 파일에 요청을 처리하는 함수를 생성
+//하나의 파라미터로 여러 개의 파일 업로드
+app.get('/multi', (req, res) => {
+    res.sendFile(path.join(__dirname, './multi.html'));
+});
+
+app.post('/multi', upload.array('image'), (req, res) => {
+    res.send('성공');
+});
+
+=>여러 개의 파라미터로 전송하는 경우는 upload.fields([{name:파라미터이름}, {name:파라미터이름}...])
+
+4)Routing
+=>Routing: 최적의 경로를 탐색하는 것을 라우팅
+=>Node 에서의 Routing
+사용자의 요청을 처리하는 부분을 모듈화하는 것
+웹 애플리케이션 서버가 커지면 처리해야 할 URL이 늘어나는데 이를 하나의 파일에서 전부 처리하면 가독성이 떨어지게 되므로 url을 모듈화해서 처리
+
+=>라우팅 - 기본 요청 과 user 가 포함된 요청 과 board 가 포함된 요청을 분리해서 구현
+
+=>routes 디렉토리를 생성
+
+=>routes 디렉토리 안에 기본 요청들을 처리하는 코드를 index.js 파일을 생성해서 추가
+const express = require('express');
+
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Hello Main');
+});
+
+module.exports = router;
+
+=>routes 디렉토리 안에 회원 관련된 요청들을 처리하는 코드를 user.js 파일을 생성해서 추가
+const express = require('express');
+
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Hello User');
+});
+
+router.get('/register', (req, res) => {
+    res.send('회원 가입');
+});
+
+module.exports = router;
+
+=>routes 디렉토리 안에 게시판 관련된 요청들을 처리하는 코드를 board.js 파일을 생성해서 추가
+const express = require('express');
+
+const router = express.Router();
+
+router.get('/', (req, res) => {
+    res.send('Hello Board');
+});
+
+router.get('/register', (req, res) => {
+    res.send('글쓰기');
+});
+
+module.exports = router;
+
+=>app.js 파일에 라우팅 파일을 URL 과 매핑
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', 3000);
+
+//라우터 파일의 내용을 가져오기
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/user');
+const boardRouter = require('./routes/board');
+//url 과 매핑
+
+app.use('/', indexRouter); /// 요청은 indexRouter에서 처리
+app.use('/user', userRouter); 
+// /user 가 앞에 있는 것은 userRouter에서 처리
+app.use('/board', boardRouter);
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+=>서버를 실행 한 후 브라우저에서 localhost:3000/, localhost:3000/user, localhost:3000/board 입력
+
+5)Front Controller 패턴
+=>클라이언트의 모든 요청을 app.js 가 받아서 각각의 라우팅 파일에서 실제로 처리를 합니다.
+서버 애플리케이션 관련된 설정은 app.js 에서 하고 실제 처리는 각 라우팅 파일에서 수행하도록 합니다.
+=>모든 요청이 먼저 들어오게 되는 app.js를 Front Controller 라고 하고 실제 처리를 담당하는 라우팅 파일들을 Page Controller 라고 합니다.
+
+**템플릿 엔진(Template Engine)
+=>서버의 데이터를 HTML 과 합쳐서 출력할 수 있도록 해주는 라이브러리
+=>거의 모든 웹 프레임워크들이 가지고 있으며 종류는 다양함
+=>서버에서 뷰를 만들어서 클라이언트에게 제공하겠다라는 의미입니다.
+=>템플릿 엔진을 사용할려면 템플릿 엔진에 대한 별도의 학습(HTML, CSS, JavaScript 이외의 학습)이 필요합니다.
+
+1.Jade
+=>지금은 저작권 문제로 Pug 로 개명
+=>https://pugjs.org/api/getting-started.html 에서 도큐먼트 제공
+
+1)설치
+npm install pug
+
+2)설정
+app.set('views', path.join(__dirname, '출력할 html 파일들의 위치'));
+app.set('view engine', 'pug');
+
+3)처리
+res.render('html 파일 경로', 데이터)
+
+4)html 파일에서 데이터를 pug 문법에 맞춰서 출력
+
+5)데이터를 pug를 이용해서 출력
+=>pug를 설치
+npm install pug
+
+=>app.js를 수정
+//웹 서버 모듈 가져오기
+const express = require('express');
+
+//웹 서버 객체 생성 과 포트 설정
+const app = express();
+app.set('port', 3000);
+
+//라우터 파일의 내용을 가져오기
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/user');
+const boardRouter = require('./routes/board');
+//url 과 매핑
+
+//app.use('/', indexRouter); /// 요청은 indexRouter에서 처리
+
+//pug 설정
+const path = require('path');
+//res.render로 출력할 때 사용할 디렉토리를 설정
+app.set('views', path.join(__dirname, 'views'));
+//템플릿 엔진은 pug를 사용하겠다고 설정
+app.set('view engine', 'pug');
+
+app.use("/", (req, res) => {
+    //템플릿 엔진으로 출력
+    //views/index.html로 출력
+    res.render('index', 
+        {'title':'Pug', 'aespa':['카리나', '지젤', '윈터']})
+});
+
+app.use('/user', userRouter); 
+// /user 가 앞에 있는 것은 userRouter에서 처리
+app.use('/board', boardRouter);
+
+//웹 서버 실행
+app.listen(app.get('port'), () => {
+    console.log(app.get('port'), '번 포트에서 서버 대기 중');
+});
+
+=>프로젝트에 views 디렉토리를 생성
+
+=>views 디렉토리에 index.pug를 만들고 작성
+doctype html
+html 
+head 
+title= title 
+
+body 
+block content
+
+block content 
+h1= title
+p Welcome to #{title}
+
+#aespa
+ul 
+each artist in aespa 
+    li= artist
+=>코드 작성 시 주의할 점은 each 안의 문장은 반드시 들여쓰기가 되어야 합니다.
+
+=>브라우저에 localhost:3000 으로 app.js 에서 넘겨준 데이터가 제대로 출력되는지 확인
+
+2)nunjucks
+=>node에서 사용하는 템플릿 엔진 중의 하나
+
+3)node에서의 템플릿 엔진
+=>node 진영에서는 템플릿 엔진을 이용한 출력보다는 node를 이용해서 결과를 전송하고 ajax 나 fetch api를 이용해서 데이터를 출력하는 경우가 더 많습니다.
+
+
+
+
+
+
