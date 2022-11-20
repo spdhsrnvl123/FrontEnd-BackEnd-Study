@@ -1,151 +1,308 @@
-***Node
-0.node.js
-=>애플리케이션 개발을 위한 자바스크립트 프레임워크 또는 라이브러리
-=>노드 만으로 애플리케이션 개발을 하기도 하지만 다른 자바스크립트 라이브러리의 기반 프레임워크가 되기도 함
+**Node
+1.NPM(Node Package Manager)
+=>노드에서의 패키지 매니저인데 지금은 거의 모든 자바스크립트 라이브러리들이 저장소에 있기 때문에 자바스크립트 라이브러들은 거의 모두 NPM을 이용해서 사용
 
-1.개발 환경 설정
-1)노드 설치: https://nodejs.org/ 에서 LTS(안정화 된 버전) 버전을 다운로드 받아서 설치
-=>터미널에서 설치 확인
-node -v
-npm -v
+1)package.json
+=>노드에서 패키지 관리를 위한 설정 파일
+=>java 에서의 build.gradle 이나 pom.xml 의 역할을 수행
+=>패키지를 설치하게 되면 패키지에 대한 정보가 전부 작성됩니다.
+패키지를 설치하게 되면 package-lock.json 파일이 생성되는데 package.json에는 직접 설치한 패키지에 대한 정보만 기재되어 있지만 
+package-lock.json 에는 의존 관계(패키지를 사용하기 위해서 필요한 패키지)가 있는 모든 패키지에 대한 정보가 기재되어있습니다.
 
-=>npm: 노드의 패키지 관리자
+2)패키지 설치
+npm install 패키열 할 때는 공백으로 구분)=
 
-2)IDE: Visual Studio Code 
+=>개발 과정에서만 사용하고 배포할 때는 제외하고자 하는 경우에는 패키지 이름 앞에 --save-dev 를 추가하면 됩니다.
 
-2.프로젝트 생성 및 실행
-1)프로젝트 생성
-=>빈 디렉토리에서 npm init 이라는 명령어로 옵션을 설정하면 됩니다.
-프로젝트를 생성하는데 성공하면 프로젝트 설정 파일인 package.json 파일이 생성되고 옵션이 설정되어 있습니다.
-옵션은 package.json 파일에서 수정이 가능합니다.
+=>모든 프로젝트에서 사용할 수 있도록 하기 위해서는 global 모드로 설치하는데 패키지 이름 앞에 -g 를 추가하면 되는데 
+지금은 경고가 발생하면서 --location=global 로 설정하기를 권장합니다.
+Mac 이나 Linux 에서 global로 설치할 때는 맨 앞에 관리자 모드를 의미하는 sudo 를 추가해야 합니다.
+sudo npm install --location=global 패키지이름의 형태로 설치해야 합니다.
+처음 한 번은 관리자 비밀번호를 입력해야 합니다.
 
-=>옵션 중에서 package 이름과 디렉토리 이름이 같으면 배포가 안됩니다. 
+=>설치된 패키지는 프로젝트 내의 node_modules 라는 디렉토리에 저장이 됩니다.
+전역으로 설치했는데 패키지가 잘 불러지지 않으면 로컬로 설치해서 사용하면 됩니다.
+전역으로 설치했는데 패키지가 잘 불러지지 않는 경우는 하나는 node 명령에 대한 path 설정이 안되었거나 node를 2개 이상 설치한 경우입니다.
 
-2)프로젝트 실행
-=>프로젝트 실행: npm start(pakage.json 파일에 설정한 entry point 파일이 실행)
-=>특정 파일 실행: node 파일경로
 
-=>학습을 할 때는 파일을 실행하지만 프로젝트를 할 때는 프로젝트를 실행
+3)패키지 설치
+=>프로젝트 생성 - package.json 이 만들어졌는지 확인
 
-3)console.log
-=>콘솔에 메시지를 출력하는 함수인데 함수의 결과는 터미널에 출력됩니다.
+=>express 패키지 설치: express는 웹 애플리케이션 서버를 만들어주는 패키지
+npm install express
 
-4.Node 내장 객체
-=>node 가 제공하는 객체
-1)global
-=>노드의 전역 객체
-=>이 객체는 노드 프로그램 전체에서 1개만 생성
-=>이 객체는 하나만 만들어서 노드 프로그램 전체가 공유
-=>사용하는 것을 권장하지는 않지만 모든 곳에서 사용해야 할 데이터가 있는 경우 사용
-예를 들면 현재 접속자 수 나 대기자 수 또는 로고 등은 모든 사용자에게 동일하게 보여집니다.
-이런 데이터를 global을 이용해서 사용합니다.
+=>morgan, cookie-parser, express-session 패키지 설치
+npm install morgan cookie-parser express-session
 
-2)console
-=>현재 보여지는 터미널 화면
-console.log(메시지): 메시지 로깅
+=>nodemon 패키지 설치: nodemon 패키지는 소스 코드를 수정하면 자동으로 재실행되게 해주는 패키지로 개발 과정에서만 사용
+npm install --save-dev nodemon
 
-console.error(메시지): 에러 형태로 로깅
+=>rimraf 패지지 설치: rimraf 패키지는 윈도우에서 터미널에서 rm 명령을 사용하기 위해서 설치
+전역 설치
 
-console.trace(메시지): 호출 스택 로깅 - 함수 나 메서드를 호출하는 순서를 역순으로 출력
-호출하는 메서드의 순서를 확인하고자 할 때 사용
+npm install --location=global rimraf
 
-console.table(배열): 테이블 형태로 출력
+--location=global 대신에 -g 라고 입력해도 됩니다.
+Mac 이나 Linux 에서는 앞에 sudo 를 추가해야 합니다.
 
-console.time(메시지) & console.timeEnd(메시지): 동일한 메시지를 사용하면 2개 호출 사이의 시간을 출력 
+4)패키지 재설치
+=>모든 패키지는 node_modules 에 다운로드 받아서 저장하게 되는데 배포를 하거나 코드를 가지고 갈때 node_module를 포함시키면 크기가 너무 커지는데 
+이런 경우에는 node_modules는 복사하지 않고 package.json 만 가져간 후 새로운 곳에서 npm init 명령만 다시 수행하면 패키지들이 전부 설치 됩니다.
 
-console.dir(객체, 옵션): 객체를 로깅할 때 옵션을 설정하는 것이 가능
+5)패키지 버전
+=>3자리로 구성
+Major Version . Minor Version . Patch
 
-=>로직이 복잡해지거나 여러 모듈을 거쳐가면서 수행되는 코드가 있다면 중간 중간 로그를 출력해서 확인을 하는 것이 좋습니다.
-로그를 출력하는 작업을 한 것은 배포를 할 때 모두 제거해야 합니다.
-필요하다면 로그는 파일이나 데이터베이스에 기록하는 것이 좋습니다.
-로그를 콘솔에 출력하는 것은 개발 과정에서만 합니다.
+Major Version 이 변경되는 경우에는 하위 버전과 호환이 안될 수 있음
+Minor Version 은 기능이 변경된 경우
+Patch 는 오류를 수정했을 때 변경
 
-4)module.exports
-=>모듈의 내용을 다른 곳에서 사용할 수 있도록 하고자 할 때 사용하는 속성
-module.exports = 내보낼 내용;
+=>버전 이름에 alpha 나 beta 가 포함되면 테스트 버전입니다.
 
-=>exports.내보내고자하는이름 = 내용; 으로 해도 동일한 기능
+6)npm 관련 명령어
+=>npm uninstall 패키지이름: 패키지 삭제
+=>npm search 검색어: 패키지 검색
+=>npm publish: 패키지 배포
+=>npm unpublish: 배포 취소 - 배포 한 후 24 시간 이내에 해야 함
 
-5)this
-=>함수 나 클래스 외부에서는 module.exports
-=>함수 안에서는 global
-=>클래스의 메서드 안에서는 인스턴스
+=>이런 명령어들은 https://docs.npmjs.com 에서 확인 가능
 
-6)require 함수
-=>외부 모듈의 내용을 가져올 때 사용하는 함수
-=>import 도 외부 모듈을 가져오는데 사용할 수 있지만 require 는 caching을 합니다.
-한 번 사용한 모듈을 메모리에 적재해두었다가 다음에 require를 하게되면 캐싱된 모듈을 가져옵니다.
-=>.js 는 생략 가능
+**  node를 이용한 웹 서버 만들기 - 실제로는 대부분 이 방법을 사용하지 않고 express 모듈을 이용하는 경우가 많음
+1.최근의 Web
+=>web 3.0
+Semantic Web 개념 등장: 로봇이 정보 자원의 뜻을 이해하고 논리적 추론까지 가능, 명확한 의미 전달이 중요, Rest API
+속도의 변화
+인공지능
+자신만의 컨텐츠 나 정보를 구성할 수 있도록 하는 사용자의 권한이 증가
+블록체인
 
-7)process 객체
-=>노드 프로세스에 대한 정보를 가지는 객체
+=>WOA(Web Oriented Architecture)
+사용자의 요구 사항 변경 - 여러 디바이스를 사용하고 디바이스끼리 끊어짐이 없는(Seamless) 서비스 요구가 증대되면서 이를 구현하기 위한 방법으로 웹 기술이 각광받음
 
-=>노드 버전이나 CPU 사용량 등을 확인할 수 있는 속성 과 메서드를 제공
+기술의 변화 - 인프라 측면에서는 클라우드 나 가상화 기술이 각광을 받고 있고 소프트웨어 측면에서는 WOA(전체 시스템 아키텍쳐를 웹을 중심으로 설계)
 
-=>process.nextTick(콜백 함수): 다른 콜백 함수보다 우선해서 처리
-Promise.resolve().then() 으로 작성 가능
+=>Framework 를 이용한 애플리케이션 개발
 
-=>process.exit(코드): 노드 프로세스 종료
-서버에서는 사용하지 않는 것이 일반적이며 일반 애플리케이션을 만들었을 때 사용
-코드는 운영체제에게 알려주는 종료 이유
+2.웹 서비스 구축 방식
+1)정적 웹 서비스
+=>요청이 오면 요청에 해당하는 HTML 페이지를 찾아서 출력하는 방식
 
-8.노드에서 이벤트 처리
-1)이벤트 연결
-객체.addEventListener("이벤트 이름", 함수);
-객체.on("이벤트 이름", 함수);
+2)CGI(Common Gateway Interface)
+=>클라이언트의 요청이 오면 서버가 작업을 수행해서 결과를 전송하거나 화면을 전송하는 방식
+=>Perl 이 시초
+=>이 방식은 사용자의 요청을 별도의 프로세스로 만들어서 처리
+하나의 요청을 전부 처리하기 전까지는 다른 요청을 처리할 수 없음
+=>Perl 이나 ASP 가 이런 형태로 동작
 
-객체.once("이벤트 이름", 함수); //이벤트가 처음 발생할 때 만 함수를 수행하고 다음부터는 함수를 수행하지 않음
+3)Application Server 방식
+=>사용자의 요청을 Thread를 만들어서 처리
+=>여러 사용자의 요청을 한꺼번에 처리하는 것 처럼 처리
+Java -> Servlet(JSP) -> Spring Framework
+C# -> asp.net 
+JavaScript -> node.js Framework
+PHP -> laravel Framework
+Python -> Flask 나 Django Framework
+Ruby -> Rails
+ 
+4)웹 프로그래밍의 구조
 
-2)이벤트 삭제
-객체.removeEventListener("이벤트 이름", 함수); //함수만 제거
-객체.removeAllEventListener("이벤트 이름"); //모든 함수가 제거
+웹 브라우저 <-> 웹 서버 <-> 애플리케이션 서버(Controller, Service, Repository) <-> 데이터 저장소
 
-3)이벤트 강제 발생
-객체.emit("이벤트 이름");
+=>언어 나 프레임워크는 애플리케이션 서버를 만들기 위한 기술
+=>Serverless 는 서버가 없는 것이 아니고 서버를 직접 구현할 필요가 없는 것
+=>웹 브라우저에서 서버에게 요청하는 것을 request 라고 하고 서버가 웹 브라우저에게 대답을 하는 것을 response 라고 합니다.
 
-4)이벤트에 10개 이상이 함수를 연결하고자 하는 경우
-=>기본적으로 에러인데 객체.setMaxListeners(개수)를 호출하면 개수만큼 연결이 가능
+3.http 모듈
+=>내장 모듈이므로 별도로 설치할 필요없음
+1)서버 생성
+http모듈.createServer((request, response) => {
+	내용
+});
 
-9.예외처리
-=>예외가 발생하게 되면 프로그램이 중단됩니다. 서버는 아주 위험한 예외가 아니라면 프로그램이 중단되면 안됩니다.
-서버 프로그래밍에서는 대다수의 코드를 예외 처리 구문 안에 삽입을 해서 예외가 발생하면 예외를 기록하고 계속 작업을 수행하도록 해야 합니다.
+2)서버 실행
+서버객체.listen(포트번호, 아이피주소); //아이피 주소는 현재 컴퓨터에 여러 개의 IP 가 존재하는 경우 작성
 
-try{
-	예외 발생 가능성이 있는 코드
-}catch(예외 객체){
-	예외가 발생했을 때 수행할 내용
-}finally{
-	예외 발생 여부에 상관없이 수행할 동작
-}
-catch 와 finally 중 하나는 생략 가능합니다.
-학습을 할 때는 catch 블럭에서 예외를 확인하는 코드를 작성하지만 실무에서는 예외를 기록하고 알림을 줍니다.
+3)서버 종료
+서버객체.close();
 
-1)예외 처리의 목적
-=>예외가 발생하더라도 계속 동작하기 위해서
-=>예외를 로깅하기 위해서
+4)서버에 발생하는 이벤트
+=>request: 클라이언트의 요청이 있을 때
+=>connection: 클라이언트가 접속했을 때
+=>clientError: 클라이언트 오류가 발생했을 때
 
-2)예외 객체의 멤버
-=>name: 예외 이름
-=>message: 예외에 대한 설명
+5)request 객체
+=>url: 요청한 url
+=>method: 요청 방식(GET, POST, PUT, PATCH, DELETE, OPTION 등)
 
-3)강제로 예외 발생
-throw new Error("예외 메시지");
+6)웹 서버 만들고 직접 응답을 생성하기
+=>js 파일을 추가한 후 작성하고 실행 - server.js
+//모듈 가져오기
+const http = require('http');
 
-4)노드에서 예외가 발생해도 예외처리를 하지 않아도 되는 경우
-=>콜백 함수의 매개변수가 예외 객체 인 경우는 예외 처리를 하지 않아도 됩니다.
-이미 예외처리 구문으로 감싸져 있고 예외 객체를 넘겨주므로 예외 객체의 존재여부를 가지고 예외 발생 여부를 판단해서 작업만 작성해주면 됩니다.
+//서버 생성
+//포트번호는 일반적으로 1024번까지는 예약되어 있으므로 사용하지 않음
+//1521, 3306, 27017 번은 데이터베이스가 사용
+//8080은 톰캣 같은 WebContainer 가 사용
+//80을 사용하게 되면 http 의 경우 포트번호 생략 가능
+//443을 사용하게 되면 https 의 경우 포트번호 생략 가능 
 
-10.자주 발생하는 에러
-=>터미널에서 명령어를 입력했을 때 command not found 에러: 명령어를 잘못입력했거나 명령어가 없거나 명령어가 있는 곳을 path 라는 환경 변수에 설정을 하지 않은 경우
+http.createServer((request, response) => {
+    //응답 생성
+    response.writeHead(200, 
+        {'Content-Type':'text/html;charset=utf-8'});
+    response.write('<h1>처음 만든 웹 서버</h1>');
+    response.end('<p>http 모듈 사용</p>');
+}).listen(8000, ()=>{
+    console.log('8000 번 포트에서 서버 대기 중');
+});
 
-=>코드를 작성한 후 실행을 할 때 모듈이름 is not defined: 모듈을 가져오지 않았거나 모듈 이름을 잘못 기재한 경우
+=>서버 실행: node server.js 를 터미널에 입력
+8000번 포트에서 서버 대기 중 메시지가 출력되는지 확인
 
-=>실행을 하다가 EADDRINUSE: 이미 포트를 사용 중인 경우, 포트를 사용 중인 프로세스를 종료하고 수행
+=>클라이언트에서 접속
+브라우저를 실행하고 url을 입력
+자기 컴퓨터의 경우는 http://localhost:8000 또는 http://127.0.0.1:8000
+다른 컴퓨터의 경우는 http://서버컴퓨터의IP:8000(서버 컴퓨터의 방화벽이 해제되어 있어야 합니다.(
 
-=>프로세스 종료
-Windows: taskkill /pid 프로세스아이디 /f
-그 이외: kill -9 프로세스아이디
+=>서버 중지는 터미널에서 Ctrl + C 인데 안되면 메시지 확인
 
-=>포트를 사용중인 프로세스 찾기
-Windows: netstat -ano | findstr 포트번호
-그 이외: lsof -l tcp:포트번호 
+7)서버에서 html 파일을 읽어서 출력
+=>프로젝트에 출력할 html 파일을 만들고 작성 - index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>;
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Server</title>
+</head>
+<body>
+    <h1>HTML 파일을 읽어서 출력</h1>
+    <p>직접 출력을 만드는 것은 너무 번거롭기 때문에 HTML 파일을
+        만들어서 출력합니다.
+    </p>
+</body>
+</html>
+
+=>server.js 파일의 내용을 수정
+//모듈 가져오기
+const { fstat } = require('fs');
+const http = require('http');
+
+//서버 생성
+//포트번호는 일반적으로 1024번까지는 예약되어 있으므로 사용하지 않음
+//1521, 3306, 27017 번은 데이터베이스가 사용
+//8080은 톰캣 같은 WebContainer 가 사용
+//80을 사용하게 되면 http 의 경우 포트번호 생략 가능
+//443을 사용하게 되면 https 의 경우 포트번호 생략 가능c
+const fs = require('fs').promises; 
+http.createServer(async(request, response) => {
+    try{
+        //파일의 내용을 읽어서 data에 저장
+        //다음 명령은 이 명령이 끝나고 나면 수행
+        const data = await fs.readFile('./index.html');
+        //200이면 성공
+        response.writeHead(200, 
+            {'Content-Type':'text/html; charset=utf-8'});
+        response.end(data);
+    }catch(error){
+'
+    }
+    
+}).listen(8000, ()=>{
+    console.log('8000 번 포트에서 서버 대기 중');
+});
+
+8)request 객체
+=>url: 클라이언트의 요청 경로
+요청 경로를 만들 때는 이해하기 쉬운 경로를 만들어주어야 하고 _ 사용은 하지 않는 것을 권장
+
+=>method: 요청 방식
+GET: 서버 자원을 가져올 때 사용(조회 - READ)
+POST: 서버에 자원을 등록하고자 할 때 사용(삽입 - CREATE)
+PUT: 서버의 자원을 수정하고자 할 때 사용(수정 - UPDATE)
+PATCH: 서버 자원의 일부분만 수정하고자 할 때 사용(수정 - UPDATE, 권장하지 않음)
+DELETE: 서버 자원을 삭제하고자 할 때 사용(삭제 - DELETE)
+OPTIONS: 요청을 하기 전에 통신 옵션을 설명하기 위해서
+
+9)REST(Representational State Transfer) API
+=>서버의 자원을 정의하고 자원에 대한 URL을 지정하는 방법
+
+=>URL 과 Method 만으로 작업을 예측할 수 있도록 하는 것
+URL은 /member 이고 Method는 POST 라면 회원 가입
+
+=>클라이언트의 종류에 상관없이 동일한 작업은 동일한 URL로 처리 
+클라이언트 애플리케이션을 서버 애플리케이션과 분리해서 구현하고 서버는 클라이언트의 뷰를 만들지 않고 데이터를 전송합니다.
+클라이언트 애플리케이션 과 서버 애플리케이션을 하나의 프로젝트로 구현하면 모바일 기기의 Native Application 과 Web Brower의 요청에 응답하는 부분을 동일한 URL로 처리할 수 없음
+
+아이폰에서 회원 가입이 URL은 /member 이고 Method는 POST 라면 안드로이드에서 동일해야 하고 Web Browser에서도 동일한 URL로 처리되어야 합니다.
+
+=>이렇게 만들어진 서버를 RESTful 하다라고 함
+
+10)axios 라이브러리
+=>브라우저 나 Node.js에서 Promise API를 이용해서 HTTP 비동기 통신을 할 수 있도록 해주는 API
+=>자바스크립트의 fetch api를 사용하기 쉽도록 해주는 라이브러리
+	axios 라이브러리				fetch api
+	별도로 설치				설치할 필요가 없음
+	XSRF 보호 제공				별도로 제공하지 않음
+	응답을 받으면 결과는 JSON 파싱한 결과		.json()을 호출해야 파싱된 결과를 만들 수 있음
+	요청을 취소할 수 있고 타임아웃 설정 가능	기능없음
+	download 진행 중을 확인할 수 있음		기능없음
+
+=>XSRF(Cross-Site Request Forgery): 쿠키만으로 인증하는 서비스의 취약점을 이용해서 사용자가 모르게 서비스에 특정 명령을 요청하는 것
+브라우저에서 삽입하겠다고 요청을 하기 위해서 폼을 조회했는데 이 폼의 URL을 복사해서 다른 기기에서 데이터를 삽입하는 작업을 수행하는 것이 대표적
+
+=>Promise 를 이용한 사용
+const axios = require('axios');
+axios.요청메서드(url)
+	.then((response) => {
+		//가져오는데 성공했을 수행할 내용
+		//response 는 가져온 데이터를 파싱한 결과
+	})
+	.catch((error) => {
+		//에러가 발생했을 때 수행할 내용
+		//error는 에러에 대한 내용을 저장한 객체
+	})
+	.then(() => {
+		성공 과 실패 여부에 상관없이 수행할 내용
+	});
+
+11)Cookie 와 Session
+=>HTTP 나 HTTPS 는 상태가 없음
+클라이언트가 서버에게 요청을 할 때 일시적으로 연결이 된 후 서버가 응답을 하고 나면 연결이 해제되버리기 때문에 다음 연결이 될 때는 이전에 어떤 상태였는지 알 수 없음
+클라이언트 와 서버가 이전에 어떤 상태였는지 알 수 있도록 하기 위해서 Cookie 와 Session 의 개념을 사용
+
+=>Cookie
+클라이언트에 저장해서 클라이언트가 서버에게 요청할 때 마다 전송되는 객체
+
+쿠키는 http 나 https 요청의 헤더에 저장하고 이름 과 값의 구조
+
+node 의 http 모듈에서 response.writeHead(코드, {'Set-Cookie':'쿠키이름=값'}) 의 형태로 작성
+쿠키가 여러 개이면 ;을 하고 추가
+
+쿠키의 옵션으로는 이름, Expires(만료시간 - 날짜), Max-age(만료시간 - 초), Domain(도메인), Path(URL), Secure(HTTPS 인 경우만 전송), HttpOnly(자바스크립트에서 수정을 못하도록 하는 경우 사용)
+
+=>Session
+클라이언트의 정보를 서버에 저장하는 기술
+클라이언트에 저장하게 되면 노출이되고 이를 수정할 수 있기 때문에 보안에 취약
+노출이 되면 안되는 데이터를 서버에 저장하고 클라이언트에서는 이 정보를 구별할 수 있는 세션 키만 저장
+클라이언트 와 서버가 동일한 도메인 경우만 가능한데 쿠키를 이용하면 클라이언트 와 서버의 도메인이 달라도 가능
+주로 로그인 정보를 저장하는데 많이 이용을 했는데 최근에 JWT(Json Web Token)를 이용하는 것을 권장하면서 사용 빈도는 줄어들었습니다.
+
+=>Cookie 대안
+Web Storage, Web SQL, Indexed DB 같은 HTML5 API를 이용하기도 합니다.
+
+12)https 모듈
+=>http 서버를 https 로 변경하기 위한 모듈
+=>https 는 암호화를 위한 인증서가 필요 - 무료나 유료로 인증서를 발급받아야 이 모듈을 사용하는 것이 가능
+https 는 데이터가 암호화되서 전송되기 때문에 중간에 가로채도 변경을 할 수 없습니다.
+https 를 사용하면 데이터 전송 간에는 암호화를 할 필요가 없는데 개발자들은 혹시 모르니 해야 한다고 합니다.
+=>최근에는 브라우저에서 https 서버가 아니면 접속을 못하도록 하기도 합니다.
+=>스마트 폰에서는 http 에 접속할려면 별도의 설정을 추가해야 합니다.
+=>https 모듈의 속도를 개선한 https2 모듈도 있음
+
+13)cluster
+=>CPU 코어를 전부 사용할 수 있도록 해주는 모듈
+=>여러 개의 연산을 동시에 수행할 수 있도록 해주는 모듈
+=>직접 서버 설정을 한다면 사용을 하지만 최근처럼 Cloud를 사용하는 경우는 직접 설정하지 않음
+
