@@ -1,9 +1,9 @@
 const express = require('express'); //모듈 가져오기
+
 //일단위 로그 기록을 위한 설정
 const morgan = require('morgan');
 const FileStreamRotator = require('file-stream-rotator');
 const path = require('path')
-//내장 모듈
 const fs = require('fs');
 
 const app = express();
