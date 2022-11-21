@@ -1,0 +1,701 @@
+**Maria DB
+1.개요
+=>SQL에 기반을 둔 RDBMS(관계형 데이터베이스)로 Open Source 형태로 제공
+=>MySQL 개발자가 만들어서 MySQL 과 거의 유사
+=>SQL 도 거의 차이가 없음
+=>작업 단위
+데이터베이스 > 테이블
+하나의 데이터베이스는 여러 유저가 공유
+
+2.데이터베이스 서버 설치
+1)OS에 직접 설치
+=>windows - https://mariadb.org/download
+=>Mac(brew install mariadb) 이나 리눅스는 패키지 관리자를 이용해서 설치
+
+2)가상화 컨테이너에 설치
+=>docker 와 같은 가상화 컨테이너에 설치
+=>docker 사이트에서 회원 가입
+
+=>docker 다운로드 및 설치
+Windows: https://hub.docker.com/editions/community/docker-ce-desktop-windows
+Mac: https://hub.docker.com/editions/community/docker-ce-desktop-mac
+
+=>Windows 에서는 WSL2를 추가로 설치해 주어야 합니다.
+https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
+
+=>mariadb image 다운로드
+터미널에서 docker pull mariadb 버전(버전은 생략하면 최신 버전)
+
+=>mariadb 컨테이너 생성
+docker run --name mariadb -d -p 외부에서접속할포트번호:MariaDB포트번호 -e MYSQL_ROOT_PASSWORD=루트비밀번호 컨테이너이름
+
+docker run --name mariadb -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=wnddkd mariadb
+
+=>컨테이너 실행 확인(모든 컨테이너를 확인 - -a를 추가)
+docker ps
+
+=>컨테이너 중지
+docker stop 컨테이너이름 이나 아이디
+
+=>컨테이너 시작이나 재시작
+docker start 컨테이너이름 이나 아이디
+docker restart 컨테이너이름 이나 아이디
+
+=>컨테이너 삭제(실행 중인 컨테이너를 삭제할 때는 뒤에 -f 옵션 추가)
+docker rm 컨테이너이름 이나 아이디
+
+3.데이터베이스 접속 도구 설치
+=>DBeaver(Open Source 이고 여러 데이터베이스 접속 가능 - https://dbeaver.io/ ) 설치
+금융 분야로 취업을 생각하면 토드 나 오렌지 같은 접속 도구를 사용하는 것도 나쁘지 않습니다.
+
+4.데이터베이스 서버 실행 및 접속 확인
+=>데이터베이스 접속 도구에서 
+HOST: localhost
+PORT: 3306(설치 할 때 변경했으면 수정)
+DATABASE: mysql(기본 제공)
+USERNAME: root(기본 제공)
+PASSWORD: 설치 할 때 사용한 비밀번호
+
+를 입력하고 연결을 시도합니다.
+
+5.데이터베이스 외부 접속 허용
+1)권한 설정
+GRANT all privileges on 사용할데이터베이스이름 TO '계정'@'접속할IP';
+=>모든 데이터베이스를 사용하게 하고자 하는 경우는 *.*
+=>모든 곳에서 접속하도록 하고자 할 때는 %를 설정하고 로컬에서만 접속하도록 할 때는 localhost
+=>권한 설정 명령은 설정하고 적용 명령을 수행
+FLUSH privileges;
+
+=>root 계정을 모든 곳에서 접속하도록 설정
+GRANT all privileges on *.* TO 'root'@'%';
+FLUSH privileges;
+
+2)서버 설정(Windows 에 직접 설치했으면 이 과정은 생략)
+=>/etc/mysql/mariadb.conf.d/50-server.cnf 파일의 bind-address 부분을 허용할 IP로 변경을 해주어야 하는데 0.0.0.0 이면 모든 곳에서 접속 가능
+실제 서버 설정이라면 Application Server 의 IP 만 허용합니다.
+
+=>docker는 직접 파일을 수정할 수 없기 때문에 터미널에서 컨테이너의 bash로 접속
+docker exec -it 컨테이너이름 bash 
+명령으로 접속한 후 아래 3개 명령으로 vim 설치
+
+apt update
+apt upgrade
+apt install vim 
+
+vim /etc/mysql/mariadb.conf.d/50-server.cnf 명령으로 수정
+
+텍스트가 열리면 i 를 눌러서 수정 모드로 진입해서 수정하고 esc 를 눌러서 수정 모드를 빠져 나온 후 :wq 명령으로 저장하고 나와야 합니다.
+
+bind address 부분을 0.0.0.0 으로 수정
+
+=>mariadb 재시작(docker에서는 컨테이너 재시작)
+
+6.SQL 작성 규칙
+=>SQL의 예약어는 대소문자 구분을 하지 않습니다.
+=>테이블 이름 이나 컬럼 이름은 대소문자를 구분하는 데이터베이스 도 있고 구분하지 않는 데이터베이스도 있음
+Maria DB 나 MySQL은 구분합니다.
+=>값을 작성할 때는 대소문자 구분을 하는데 MariaDB는 대소문자 구분을 하지 않는 경우도 있습니다.
+=>숫자 데이터는 따옴표를 하지 않고 문자는 작은 따옴표를 해서 표현하는데 MariaDB 나 MySQL은 큰 따옴표도 허용합니다.
+=>명령문의 마지막은 ; 인데 접속도구에서는 해도 되고 하지 않아도 되지만 절차적 프로그래밍을 할 때는 명확하게 해주어야 하며 프로그래밍 언어에서 SQL을 사용할 때는 ;을 하면 안됩니다.
+
+7.데이터베이스 관련 명령어
+1)데이터베이스 생성
+create database 데이터베이스이름; #이미 존재하는 이름이면 에러
+=>일반적으로 프로젝트를 진행할 때 마다 데이터베이스를 생성
+
+2)데이터베이스 확인
+show databases;
+
+3)데이터베이스 사용 - 항상 MySQL 이나 Maria DB에서는 SQL을 사용하기 전에 데이터베이스 사용 설정을 먼저
+use 데이터베이스이름;
+
+4)데이터베이스 삭제
+drop database 데이터베이스이름
+
+5)데이터베이스에 존재하는 테이블 확인
+show tables;
+
+6)데이터베이스 생성 및 사용 실습
+-- 데이터베이스 목록 보기
+show databases;
+
+-- 데이터베이스 만들기
+create database adam;
+
+-- 데이터베이스 사용
+use adam;
+
+8.샘플 데이터 생성
+CREATE TABLE tCity
+(
+	name CHAR(10) PRIMARY KEY,
+	area INT NULL ,
+	popu INT NULL ,
+	metro CHAR(1) NOT NULL,
+	region CHAR(6) NOT NULL
+);
+
+INSERT INTO tCity VALUES ('서울',605,974,'y','경기');
+INSERT INTO tCity VALUES ('부산',765,342,'y','경상');
+INSERT INTO tCity VALUES ('오산',42,21,'n','경기');
+INSERT INTO tCity VALUES ('청주',940,83,'n','충청');
+INSERT INTO tCity VALUES ('전주',205,65,'n','전라');
+INSERT INTO tCity VALUES ('순천',910,27,'n','전라');
+INSERT INTO tCity VALUES ('춘천',1116,27,'n','강원');
+INSERT INTO tCity VALUES ('홍천',1819,7,'n','강원');
+
+SELECT * FROM tCity;
+
+CREATE TABLE tStaff
+(
+	name CHAR (15) PRIMARY KEY,
+	depart CHAR (10) NOT NULL,
+	gender CHAR(3) NOT NULL,
+	joindate DATE NOT NULL,
+	grade CHAR(10) NOT NULL,
+	salary INT NOT NULL,
+	score DECIMAL(5,2) NULL
+);
+
+INSERT INTO tStaff VALUES ('김유신','총무부','남','2000-2-3','이사',420,88.8);
+INSERT INTO tStaff VALUES ('유관순','영업부','여','2009-3-1','과장',380,NULL);
+INSERT INTO tStaff VALUES ('안중근','인사과','남','2012-5-5','대리',256,76.5);
+INSERT INTO tStaff VALUES ('윤봉길','영업부','남','2015-8-15','과장',350,71.25);
+INSERT INTO tStaff VALUES ('강감찬','영업부','남','2018-10-9','사원',320,56.0);
+INSERT INTO tStaff VALUES ('정몽주','총무부','남','2010-9-16','대리',370,89.5);
+INSERT INTO tStaff VALUES ('허난설헌','인사과','여','2020-1-5','사원',285,44.5);
+INSERT INTO tStaff VALUES ('신사임당','영업부','여','2013-6-19','부장',400,92.0);
+INSERT INTO tStaff VALUES ('성삼문','영업부','남','2014-6-8','대리',285,87.75);
+INSERT INTO tStaff VALUES ('논개','인사과','여','2010-9-16','대리',340,46.2);
+INSERT INTO tStaff VALUES ('황진이','인사과','여','2012-5-5','사원',275,52.5);
+INSERT INTO tStaff VALUES ('이율곡','총무부','남','2016-3-8','과장',385,65.4);
+INSERT INTO tStaff VALUES ('이사부','총무부','남','2000-2-3','대리',375,50);
+INSERT INTO tStaff VALUES ('안창호','영업부','남','2015-8-15','사원',370,74.2);
+INSERT INTO tStaff VALUES ('을지문덕','영업부','남','2019-6-29','사원',330,NULL);
+INSERT INTO tStaff VALUES ('정약용','총무부','남','2020-3-14','과장',380,69.8);
+INSERT INTO tStaff VALUES ('홍길동','인사과','남','2019-8-8','차장',380,77.7);
+INSERT INTO tStaff VALUES ('대조영','총무부','남','2020-7-7','차장',290,49.9);
+INSERT INTO tStaff VALUES ('장보고','인사과','남','2005-4-1','부장',440,58.3);
+INSERT INTO tStaff VALUES ('선덕여왕','인사과','여','2017-8-3','사원',315,45.1);
+
+SELECT * FROM tStaff;
+
+-- 테이블 구조 확인
+DESC tStaff;
+
+DESC tCity;
+
+CREATE TABLE DEPT(
+	DEPTNO INT(2),
+	DNAME VARCHAR(14) ,
+	LOC VARCHAR(13),
+	CONSTRAINT PK_DEPT PRIMARY KEY(DEPTNO)
+);
+
+CREATE TABLE EMP(
+	EMPNO INT(4),
+	ENAME VARCHAR(10),
+	JOB VARCHAR(9),
+	MGR INT(4),
+	HIREDATE DATE,
+	SAL FLOAT(7,2),
+	COMM FLOAT(7,2),
+	DEPTNO INT(2),
+	CONSTRAINT PK_EMP PRIMARY KEY(EMPNO),
+	CONSTRAINT FK_DEPTNO FOREIGN KEY(DEPTNO) REFERENCES DEPT(DEPTNO)
+);
+
+INSERT INTO DEPT VALUES(10,'ACCOUNTING','NEW YORK');
+INSERT INTO DEPT VALUES (20,'RESEARCH','DALLAS');
+INSERT INTO DEPT VALUES(30,'SALES','CHICAGO');
+INSERT INTO DEPT VALUES(40,'OPERATIONS','BOSTON');
+
+INSERT INTO EMP VALUES
+(7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+INSERT INTO EMP VALUES
+(7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30);
+INSERT INTO EMP VALUES
+(7521,'WARD','SALESMAN',7698,'1981-2-22',1250,500,30);
+INSERT INTO EMP VALUES
+(7566,'JONES','MANAGER',7839,'1981-4-2',2975,NULL,20);
+INSERT INTO EMP VALUES
+(7654,'MARTIN','SALESMAN',7698,'1981-9-28',1250,1400,30);
+INSERT INTO EMP VALUES
+(7698,'BLAKE','MANAGER',7839,'1981-5-1',2850,NULL,30);
+INSERT INTO EMP VALUES
+(7782,'CLARK','MANAGER',7839,'1981-6-9',2450,NULL,10);
+INSERT INTO EMP VALUES
+(7788,'SCOTT','ANALYST',7566,'1987-7-13',3000,NULL,20);
+INSERT INTO EMP VALUES
+(7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+INSERT INTO EMP VALUES
+(7844,'TURNER','SALESMAN',7698,'1981-9-8',1500,0,30);
+INSERT INTO EMP VALUES
+(7876,'ADAMS','CLERK',7788,'1987-7-13',1100,NULL,20);
+
+INSERT INTO EMP VALUES
+(7900,'JAMES','CLERK',7698,'1981-12-3',950,NULL,30);
+INSERT INTO EMP VALUES
+(7902,'FORD','ANALYST',7566,'1981-12-3',3000,NULL,20);
+INSERT INTO EMP VALUES
+(7934,'MILLER','CLERK',7782,'1982-1-23',1300,NULL,10);
+
+CREATE TABLE SALGRADE
+      ( GRADE INT,
+	LOSAL INT,
+	HISAL INT );
+INSERT INTO SALGRADE VALUES (1,700,1200);
+INSERT INTO SALGRADE VALUES (2,1201,1400);
+INSERT INTO SALGRADE VALUES (3,1401,2000);
+INSERT INTO SALGRADE VALUES (4,2001,3000);
+INSERT INTO SALGRADE VALUES (5,3001,9999);
+
+COMMIT;
+
+create table usertbl(
+userid char(15) not null primary key,
+name varchar(20) not null,
+birthyear int not null, 
+addr char(100),
+mobile char(11),
+mdate date)ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+create table buytbl(
+num int auto_increment primary key,
+userid char(8) not null,
+productname char(10),
+groupname char(10),
+price int not null,
+amount int not null,
+foreign key (userid) references usertbl(userid) on delete cascade)ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+insert into usertbl values('kty', '김태연',1989,'전주','01011111111', '1989-3-9');
+insert into usertbl values('bsj', '배수지',1994,'광주','01022222222', '1994-10-10');
+insert into usertbl values('ksh', '김설현',1995,'부천','01033333333', '1995-1-3');
+insert into usertbl values('bjh', '배주현',1991,'대구','01044444444', '1991-3-29');
+insert into usertbl values('ghr', '구하라',1991,'광주','01055555555', '1991-1-13');
+insert into usertbl values('san', '산다라박',1984,'부산','01066666666', '1984-11-12');
+insert into usertbl values('jsm', '전소미',2001,'캐나다','01077777777', '2001-3-9');
+insert into usertbl values('lhl', '이효리',1979,'서울','01088888888', '1979-5-10');
+insert into usertbl values('iyou', '아이유',1993,'서울','01099999999', '1993-5-19');
+insert into usertbl values('ailee', '에일리',1989,'미국','01000000000', '1989-5-30');
+
+commit;
+
+insert into buytbl values(null, 'kty', '운동화', '잡화', 30, 2);
+insert into buytbl values(null, 'kty', '노트북', '전자', 1000, 1);
+insert into buytbl values(null, 'jsm', '운동화', '잡화', 30, 1);
+insert into buytbl values(null, 'lhl', '모니터', '전자', 200, 1);
+insert into buytbl values(null, 'bsj', '모니터', '전자', 200, 1);
+insert into buytbl values(null, 'kty', '청바지', '잡화', 100, 1);
+insert into buytbl values(null, 'lhl', '책', '서적', 15, 2);
+insert into buytbl values(null, 'iyou', '책', '서적', 15, 7);
+insert into buytbl values(null, 'iyou', '컴퓨터', '전자', 500, 1);
+insert into buytbl values(null, 'bsj', '노트북', '전자', 1000, 1);
+insert into buytbl values(null, 'bjh', '메모리', '전자', 50, 4);
+insert into buytbl values(null, 'ailee', '운동화', '잡화', 30, 2);
+insert into buytbl values(null, 'ghr', '운동화', '잡화', 30, 1);
+
+commit;
+
+
+9.SQL 분류
+1)DDL(구조에 관련된 명령어로 일반적으로 DBA 의 명령어) - 취소 안됨
+=>CREATE: 구조 생성
+=>ALTER: 구조 변경
+=>DROP: 구조 삭제
+
+=>TRUNCATE: 테이블 내의 데이터 삭제
+
+=>RENAME: 구조 이름 변경
+
+2)DQL - 검색 관련 명령어
+=>SELECT
+
+3)DML - 데이터 관련 명령어 - 취소 가능
+=>INSERT
+=>UPDATE
+=>DELETE
+
+4)TCL - 트랜잭션 관련 명령어(취소 불가능)
+=>COMMIT: 현재 작업까지 작업 내용을 원본에 반영
+=>ROLLBACK: 작업 내용을 취소
+=>SAVEPOINT: 취소할 지점을 만드는 명령
+
+5)DCL - 제어 명령(취소 불가능하고 운영자의 언어)
+=>GRANT: 권한 부여
+=>REVOKE: 권한 회수
+
+6)개발자에게 중요도
+DQL -> DML -> TCL -> DDL -> DCL
+
+10.SELECT
+=>데이터 조회 명령어로 원본에 아무런 영향을 주지 않음
+=>원본에서 데이터를 복제해서 리턴합니다.
+
+1)샘플 데이터 구조
+EMP 테이블
+	EMPNO: 사원번호로 정수 4자리이고 기본키
+	ENAME: 사원이름으로 문자
+	JOB: 직무로 문자
+	MGR: 관리자의 사원번호
+	HIREDATE: 입사일로 날짜 형식
+	SAL: 급여로 실수 7자리 소수 2자리
+	COMM: 상여금으로 실수 7자리 소수 2자리
+	DEPT: 부서 번호로 정수 2자리이고 DEPT 테이블의 DEPTNO를 참조
+
+DEPT 테이블
+	DEPTNO: 부서번호로 정수 2자리이고 기본키
+	DNAME: 부서이름으로 문자
+	LOC: 위치로 문자
+
+SALGRADE 테이블
+	GRADE 테이블: 호봉으로 숫자이고 기본키
+	LOSAL: 호봉의 최저 급여로 숫자
+	HISAL: 호봉의 최고 급여로 숫자
+
+TCITY 테이블
+	NAME: 도시이름으로 문자열이고 기본키
+	AREA: 면적으로 정수
+	POPU: 인구수로 정수
+	METRO: 대도시 여부로 문자
+	REGION: 지역으로 문자
+
+
+TSTAFF 테이블
+	NAME: 직원으로 문자이고 기본키
+	DEPART: 부서이름으로 문자열
+	GENDER: 성별로 문자열
+	JOINDATE: 입사일로 문자열
+	GRADE: 직무로 문자열
+	SALARY: 급여로 정수
+	SCORE: 고과 점수로 실수
+
+2)SELECT 용어
+=>Selection: 테이블의 행을 선택할 때 사용하는 것
+=>Projection: 테이블의 열을 선택할 때 사용하는 것
+=>Join: 공유 테이블 양쪽의 열에 대해서 링크를 생성해서 다른 테이블의 데이터를 가져와서 합치는 것
+
+3)MariaDB에서의 SELECT 구조
+5 - SELECT	데이터를 열 단위로 조회하기 위한 열 이름이나 계산식을 나열
+1 - FROM  	데이터를 조회할 테이블을 나열
+2 - [WHERE	데이터를 행 단위로 분할하기 위한 조건]
+3 - [GROUP BY	데이터를 그룹화하시키기 위한 열 이름 이나 계산식을 나열]
+4 - [HAVING	데이터를 행 단위로 분할하기 위한 조건]
+6 - [ORDER BY	데이터를 정렬하기 위한 열 이름이나 계산식 또는 SELECT 절의 번호 와 정렬 방법]
+7 - [LIMIT		데이터의 위치 와 개수를 지정해서 가져오기 위한 절로 표준은 아님]
+
+=>FROM을 수행하게 되면 원본 데이터베이스에서 테이블 단위로 복제를 해와서 작업을 수행 - 여기서 다른 이름을 명명하는 것은 별명이 아니고 이름을 바꾸는 것입니다.
+
+4)SELECT 구문의 가장 기본적인 구조
+=>테이블의 모든 데이터 조회: 컬럼의 순서는 테이블을 만들 때 작성한 순서대로 리턴
+직접 테이블을 생성한 경우가 아니라면 * 은 사용하지 않는 것이 좋습니다.
+SELECT *
+FROM 테이블이름
+
+tCity 테이블의 모든 데이터를 조회
+SELECT *
+FROM tCity;
+
+=>특정 컬럼만 추출
+SELECT 절에 필요한 컬럼만 나열
+
+SELECT 컬럼 이름 나열
+FROM 테이블이름;
+	
+tCity 테이블에서 name 와 popu 컬럼을 조회
+SELECT name, popu
+FROM tCity;
+
+tStaff 테이블에서 name, depart, grade 컬럼을 조회
+
+5)SELECT 절에서의 별명
+=>SELECT 절에서는 컬럼에 별명을 부여할 수 있습니다.
+=>하나의 공백을 두고 별명을 설정하면 되는데 이 때 공백 자리에 AS 를 추가해도 됩니다.
+=>별명에 공백이나 특수문자 또는 대문자가 있으면 " "로 묶어야 합니다.
+=>SELECT 절의 별명은 ORDER BY에서 사용 가능하고 프로그래밍 언어에서도 별명을 가지고 데이터를 가지고 옵니다.
+=>계산식이나 그룹 함수의 결과를 조회하고자 할 때는 별명을 부여하는 것이 좋습니다.
+
+SELECT name as 이름
+FROM 
+
+
+SELECT name 이름, popu as "인구 수"
+FROM tCity;
+
+6)계산식 출력
+=>FROM 절을 제외한 모든 곳에서 계산식 사용이 가능
+=>계산식은 가상의 컬럼이고 FROM 은 실제 테이블을 가져오는 것이므로 FROM 절에는 계산식을 사용할 수 없음
+=>tCity 테이블에서 name 과 popu 에 10000을 곱한 결과를 조회
+SELECT name, popu * 10000 AS "인구(명)"
+FROM tCity;
+
+=>단순 계산식은 FROM을 생략해도 됩니다.
+SELECT 60 * 60 * 24;
+
+7)concat 함수
+=>2개 이상의 문자열을 합쳐주는 함수
+=>2개 이상의 컬럼 이나 연산식을 하나로 합쳐서 출력하기 위해서 사용
+=>MyBatis 와 같은 SQL Mapper Framework 에서 like를 사용하기 위해서는 알아두어야 합니다.
+
+EMP 테이블에서 ENMAE 과 JOB을 합쳐서 조회
+SELECT concat(ENAME,' ', JOB)
+FROM EMP;
+
+9)DISTINCT
+=>SELECT 절의 맨 앞에 한번만 기재해서 컬럼의 중복된 값을 제거하는 역할
+=>컬럼 이름이 하나이면 그 컬럼의 값이 중복된 것만 제거하고 컬럼이 2개 이상이면 모든 값이 일치하는 경우에 제외
+
+tCity 테이블에서 region을 조회
+SELECT region
+FROM tCity;
+
+
+tCity 테이블에서 region을 제외하고 조회
+SELECT DISTINCT region
+FROM tCity;
+
+tCity 테이블에서 region 과 name 모두가 중복된 경우만 제외
+SELECT DISTINCT region, name
+FROM tCity;
+
+10)ORDER BY
+=>조회된 데이터를 정렬하기 위한 절
+ORDER BY 컬럼이름 [ASC | DESC] 나열
+=>ASC 는 오름차순이고 DESC는 내림차순인데 기본이 오름차순
+=>오름차순의 기본 순서
+숫자는 작은 것에서 큰 것 순으로
+날짜는 빠른 것에서 늦은 것으로
+문자는 알파벳 순서대로 앞글자부터 비교
+NULL 이 가장 마지막
+=>컬럼이름 대신에 SELECT 절의 순서로 설정하는 것이 가능
+=>SELECT 절에서 만든 별명 사용 가능
+=>2개 이상의 필드 나열 가능한데 첫번째 필드로 정렬하고 동일한 값이 있는 경우 두번째 필드의 정렬 조건을 확인
+=>계산식을 이용한 정렬 가능
+=>권장하지는 않지만 정렬 기준 필드를 출력하지 않아도 됨
+
+=>tCity 의 데이터를 popu 순으로 정렬
+SELECT *
+FROM tCity 
+ORDER BY popu;
+
+SELECT *
+FROM tCity 
+ORDER BY 3;
+
+SELECT *
+FROM tCity 
+ORDER BY 3 DESC;
+
+=>tCity 테이블의 데이터를 region 별로 정렬하고 동일한 값이 있으면 name의 내림차순으로 정렬을 하고 region, name, area, popu 컬럼을 조회
+
+SELECT region, name, area, popu
+FROM tCity 
+ORDER BY region, name DESC;
+
+
+=>SELEC 구문의 결과가 2개 이상의 행이 될 것 같은 경우에는 ORDER BY를 이용해서 정렬을 해주는 것 이 좋습니다.
+
+
+11)WHERE
+=>테이블의 데이터를 행 단위로 분할하기 위한 조건을 설정하는 절
+=>SELECT, UPDATE, DELETE 구문 과 함께 사용
+=>비교 연산자
+=
+>
+<
+>=, NOT 컬럼이름 <
+<=, NOT 컬럼이름 >
+<>, !=, ^=, NOT 컬럼이름 =
+
+tCity 테이블에서 name 이 서울인 데이터의 모든 컬럼을 조회
+SELECT *
+FROM tCity
+WHERE name = '서울';
+
+tCity 테이블에서 metro 가 y인 데이터의 모든 컬럼을 조회
+SELECT *
+FROM tCity
+WHERE metro = 'y';
+
+Maria DB 의 경우 대소문자를 구별하지 않는 경우가 있을 수 있기 때문에 유의해야 합니다.
+
+SELECT *
+FROM tCity
+WHERE metro = 'Y';
+
+대소문자 구별하기 - 조회를 할 때 컬럼 이름을 BINARY로 묶어주거나 컬럼을 만들 때 자료형 뒤에 BINARY를 추가해주어야 합니다.
+SELECT *
+FROM tCity
+WHERE BINARY(metro) = 'Y';
+
+tCity 테이블에서 popu 의 값이 100 이상인 데이터의 모든 컬럼을 조회
+SELECT *
+FROM tCity
+WHERE popu >=100;
+
+크다 작다 크거나 같다 작거나 같다 조건이 있는 경우 테스트를 할 때 경계값 과 경계값 양쪽의 데이터를 반드시 테스트하세요 - Boundary Value Analysys(경계값 분석 기법)
+
+=>NULL(아직 알려지지 않은 값 으로 표현) 비교
+NULL은 일반 연산자로 비교 안됨
+IS NULL 과 IS NOT NULL로 비교
+
+데이터베이스에서 NULL을 저장하는 방법은 공간에 NULL을 대입하는 개념이 아니고 NULL을 저장할 수 있는 컬럼에는 데이터를 저장할 수 있는 공간에 하나의 공간을 추가해서 그 공간에 NULL 여부를 표시하기 때문입니다.
+
+tStaff 테이블에서 score가 NULL 인 데이터를 조회
+SELECT *
+FROM tStaff
+WHERE score = NULL;
+
+SELECT *
+FROM tStaff
+WHERE score IS NULL;
+
+=>논리 연산자 AND 와 OR 를 제공
+AND 는 두 개의 조건이 모두 일치하는 경우만 조회하는데 앞의 조건이 일치하지 않으면 뒤의 조건은 확인하지 않음
+OR 는 두 개의 조건 중 하나의 조건만 일치해도 조회되는데 앞의 조건이 일치하면 뒤의 조건은 확인하지 않음
+AND 가 OR 보다 우선 순위가 높습니다.
+
+tCity 테이블에서 popu 가 100만 이상이고 area 가 700 이상인 데이터의 모든 컬럼을 조회
+
+SELECT *
+FROM  tCity
+WHERE  popu >= 100 AND area  >= 700;
+
+=>NOT
+
+=>LIKE
+부분 일치하는 데이터를 조회
+
+와일드 카드 문자
+_: 하나의 문자와 매칭
+%: 글자 수 상관없음
+[ ]: 문자를 나열하면 문자 중 하나와 일치
+[^]: 문자를 나열하면 문자에 포함되지 않는
+
+와일드 카드 문자를 검색하고자 하는 경우는 ESCAPE 이용
+
+tCity 테이블에서 name 에 천이 포함된 데이터를 조회
+SELECT *
+FROM  tCity
+WHERE  name LIKE '%천%';
+
+tCity 테이블에서 name 에 천이 포함되지 않은 데이터를 조회
+SELECT *
+FROM  tCity
+WHERE  name NOT LIKE '%천%';
+
+tCity 테이블에서 name 에 천으로 끝나는 데이터를 조회
+SELECT *
+FROM  tCity
+WHERE  name NOT LIKE '%천';
+
+tCity 테이블에서 name 에 천으로 시작는 데이터를 조회
+SELECT *
+FROM  tCity
+WHERE  name NOT LIKE '천%';
+
+EMP 테이블에서 ENAME 에 S 가 포함된 데이터를 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%S%'
+
+SELECT *
+FROM EMP
+WHERE ENAME LIKE 'S%'
+
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%S'
+
+EMP 테이블에서 ENAME 이 N으로 끝나는 6자의 이름을 가진 데이터를 조회(_ 5개)
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '_____N'
+
+SALE에 30% 가 포함된 데이터 조회
+
+WHERE SALE LIKE '%30#%%' ESCAPE '#'
+# 뒤에 한 문자는 있는 그대로 해석
+
+=>BETWEEN ~ AND
+BETWEEN A AND B 형태로 작성하는 A 부터 B 까지의 데이터 조회
+숫자, 날짜, 문자열 모두 사용이 가능
+단순 AND 로도 가능
+
+tCity 테이블에서 popu 가 50 ~ 100 사이인 데이터 조회
+SELECT *
+FROM tCity
+WHERE popu BETWEEN 50 AND 100;
+
+문자의 크기 비교는 맨 앞 글자부터 순서대로 하나씩 비교
+tCity 테이블에서 name 이 ㅊ이 포함된 문자로 시작하는 시작하는 데이터 조회
+
+SELECT *
+FROM tCity
+WHERE name LIKE 'ㅊ%';
+
+
+SELECT *
+FROM tCity
+WHERE name >= '차' AND name < '카';
+
+
+tStaff 에서 joindate 가 2015년 1월 1일 부터 2018년 12월 31일 사이인 데이터를 조회
+SELECT *
+FROM tStaff
+WHERE joindate BETWEEN '20150101' AND '20181231';
+
+
+=>IN 연산자
+IN (값을 나열): 나열된 값에 포함되는 경우 조회
+
+tCity 테이블에서 region 이 경상 이나 전라인 데이터 조회
+SELECT *
+FROM tCity
+WHERE region = '경상' OR region = '전라';
+ 
+SELECT *
+FROM tCity
+WHERE region IN ('경상', '전라');
+
+
+12)LIMIT
+=>행의 개수 제한에 이용 - TOP N
+LIMIT [건너뛸 행의 개수], 조회할 개수
+=>최근에는 LIMIT 개수 OFFSET 건너뛸 행의 개수
+=>ORDER BY 와 같이 사용되는 경우가 많음
+
+tCity 테이블에서 popu 가 큰 4개의 데이터 조회
+SELECT *
+FROM tCity
+ORDER BY popu desc
+LIMIT 4;
+
+tCity 테이블에서 popu 가 큰 5번째 데이터부터 2개 조회
+SELECT *
+FROM tCity
+ORDER BY popu desc
+LIMIT 4, 2;
+
+SELECT *
+FROM tCity
+ORDER BY popu desc
+LIMIT 2
+OFFSET 4;
+
+SELECT *
+FROM tCity
+ORDER BY popu desc OFFSET 4 ROWS FETCH NEXT 2 ROWS ONLY;
+
+10.Scala Function
+1)Function
+=>데이터베이스에서 함수는 반드시 리턴을 해야 합니다.
+
+
+
+
+
+
+
+
