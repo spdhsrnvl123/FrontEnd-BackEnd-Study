@@ -1,0 +1,31 @@
+{
+    "keepSettings": {
+        "type": 2,
+        "amount": 10
+    },
+    "auditFilename": "audit.json",
+    "hashType": "md5",
+    "extension": "",
+    "files": [
+        {
+            "date": 1669256852256,
+            "name": "C:\\Users\\Administrator\\Documents\\node\\mariadb\\log\\access-20221124.log",
+            "hash": "b5cd1b479f9445ccb236cef5567aabaf"
+        },
+        {
+            "date": 1669343458849,
+            "name": "C:\\Users\\Administrator\\Documents\\node\\mariadb\\log\\access-20221125.log",
+            "hash": "749c6c4fa12a41771d8363bdc0aab747"
+        },
+        {
+            "date": 1669260504902,
+            "name": "/Users/itaehyeong/Desktop/KakaoCloudSchool/node_mysql/log/access-20221124.log",
+            "hash": "9a5e664c84c72c99e2d7d8d11912fff1"
+        },
+        {
+            "date": 1669289910518,
+            "name": "/Users/itaehyeong/Desktop/KakaoCloudSchool/NodeMySql/log/access-20221124.log",
+            "hash": "f7ddab828629b7c1a2487bfbdcb47002"
+        }
+    ]
+}
