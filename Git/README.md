@@ -3,84 +3,87 @@
 ## 🌈 명령어
 <span style="color:skyblue">**git 사용자 정보 등록 닉네임 입력**</span>
 ```
-git config --global user.name "Leutbing"
+$ git config --global user.name "Leutbing"
 ```
 <span style="color:skyblue">**이메일 입력**</span>
 ```
-git config --global user.email spdhsrnvl123@naver.com
+$ git config --global user.email spdhsrnvl123@naver.com
 ```
 <span style="color:skyblue">**현재 위치에서 지역 저장소를 생성**</span>
 - .git이라는 숨겨진 폴더가 만들어진다.
 ```
-git init
+$ git init
 ```
 <span style="color:skyblue">**변경된 파일 확인**</span>
 ```
-git status
+$ git status
 ```
 <span style="color:skyblue">**[파일명.확장자명]을 스테이지에 올림**</span>
 ```
-git add [파일명.확장자명]
+$ git add [파일명.확장자명]
 ```
 <span style="color:skyblue">**커밋하기**</span>
 ```
-git commit -m "커밋 메시지"
+$ git commit -m "커밋 메시지"
 ```
 <span style="color:skyblue">**생성한 커밋 보기**</span>
 ```
-git log
+$ git log
 ```
 <span style="color:skyblue">**푸시하기**</span>
 ```
-git push [remote name] [branch name]
+$ git push [remote name] [branch name]
 ```
 <span style="color:skyblue">**원격 저장소 추가**</span>
 - 원격 저장소 추가는 git remote add <이름> <주소> 명령어로 추가할 수 있다.
 ```
-git remote add origin https://github.com/아이디/이름.git
+$ git remote add origin https://github.com/아이디/이름.git
 ```
 <span style="color:skyblue">**원격 저장소 확인**</span>
 - git remote 명령어를 사용하면 연결된 원격 저장소를 확인할 수 있다.<br />
 - 등록된 원격 저장소가 없다면 아무 값도 출력되 않는다.
 ```
-git remote
+$ git remote
 ```
 <span style="color:skyblue">**원격 저장소 더 자세한 정보 확인**</span>
 ```
-git remote show [remote name]
+$ git remote show [remote name]
 ```
 <span style="color:skyblue">**원격 저장소 이름 변경하기**</span>
 ```
-git remote rename [existing remote name] [change remote name]
+$ git remote rename [existing remote name] [change remote name]
 ```
 <span style="color:skyblue">**원격 저장소 삭제**</span>
 ```
-git remote rm [branch name]
+$ git remote rm [branch name]
 ```
 <span style="color:skyblue">**브랜치 확인**</span>
 ```
-git branch
+$ git branch
 ```
 <span style="color:skyblue">**브랜치로 이동**</span>
 ```
-git checkout [branch name]
+$ git checkout [branch name]
 ```
 <span style="color:skyblue">**브랜치 추가**</span>
 ```
-git branch [branch name]
+$ git branch [branch name]
 ```
 <span style="color:skyblue">**브랜치 삭제**</span>
 ```
-git branch -d [branch name]
+$ git branch -d [branch name]
 ```
 <span style="color:skyblue">**원격 저장소의 커밋을 지역 저장소로 가져옴**</span>
 ```
-git pull [remote name][branch name]
+$ git pull [remote name][branch name]
 ```
 <span style="color:skyblue">**원격 저장소의 커밋을 가져오기만 하고 merge하지 않는다**</span>
 ```
-git fetch
+$ git fetch
 ```
+
+## [reference Blog](https://www.testingdocs.com/wp-content/uploads/Pull-Request.png)
+
 <hr />
 
 ## 🚀 브랜치(Branch)
