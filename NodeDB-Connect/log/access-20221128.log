@@ -1,0 +1,3 @@
+::1 - - [28/Nov/2022:00:17:09 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+::1 - - [28/Nov/2022:00:17:09 +0000] "GET /css/common.css HTTP/1.1" 200 52 "http://localhost:9000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+::1 - - [28/Nov/2022:00:17:11 +0000] "GET /item/all HTTP/1.1" 200 - "http://localhost:9000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
