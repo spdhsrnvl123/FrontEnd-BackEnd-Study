@@ -1,1 +1,1 @@
-# 🌈 Kako Cloud School
+# 🌈 Kakao Cloud School
