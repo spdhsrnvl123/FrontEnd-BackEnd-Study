@@ -1,6 +1,6 @@
 **React_Router
 1.Routing
-=> 요청 URL에 따라 분기를 해서 출력을하는 것
+=> 요청 URL에 따라 분기를 해서 출력을 하는 것
 
 2.SPA(Single Page Application)
 1)Server Rendering
